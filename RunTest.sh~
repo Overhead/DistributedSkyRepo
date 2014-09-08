@@ -1,0 +1,2 @@
+export GOPATH=${CURDIR}
+go test dht_test 

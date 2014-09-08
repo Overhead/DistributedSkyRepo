@@ -1,2 +1,2 @@
 build:
-	go build Obj1
+	go build lab1

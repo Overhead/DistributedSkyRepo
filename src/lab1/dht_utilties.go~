@@ -1,11 +1,12 @@
-package dht
+
+package first
 
 import (
 	"bytes"
 	"crypto/sha1"
 	"fmt"
-	"github.com/nu7hatch/gouuid"
 	"math/big"
+	"github.com/nu7hatch/gouuid"
 )
 
 func distance(a, b []byte, bits int) *big.Int {
@@ -82,12 +83,12 @@ func calcFinger(n []byte, k int, m int) (string, []byte) {
 	result := big.Int{}
 	result.Mod(&sum, &ceil)
 
-	fmt.Printf("result       %s\n", result.String())
+	fmt.Printf("finger       %s\n", result.String())
 
 	resultBytes := result.Bytes()
 	resultHex := fmt.Sprintf("%x", resultBytes)
 
-	fmt.Printf("result (hex) %s\n", resultHex)
+	fmt.Printf("finger (hex) %s\n", resultHex)
 
 	return resultHex, resultBytes
 }
@@ -98,9 +99,13 @@ func generateNodeId() string {
 		panic(err)
 	}
 
+	return sha1hash(u.String())
+}
+
+func sha1hash(str string) string {
 	// calculate sha-1 hash
 	hasher := sha1.New()
-	hasher.Write([]byte(u.String()))
+	hasher.Write([]byte(str))
 
 	return fmt.Sprintf("%x", hasher.Sum(nil))
 }

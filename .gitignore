@@ -1,2 +1,1 @@
-bin/*
-pkg/*
+src/github.com/*
