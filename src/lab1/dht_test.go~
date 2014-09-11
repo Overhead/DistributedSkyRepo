@@ -1,5 +1,5 @@
 
-package first
+package lab1
 
 import (
 	"fmt"
@@ -8,6 +8,34 @@ import (
 
 // test cases can be run by calling e.g. go test -test.run TestRingSetup
 // go run test will run all tests
+
+func TestThisProg2(t *testing.T) {
+	id0 := "00"
+	id1 := "01"
+	id6 := "06"
+	id7 := "07"
+
+	node0 := makeDHTNode(&id0, "localhost", "1111")
+	node1 := makeDHTNode(&id1, "localhost", "1112")
+	node6 := makeDHTNode(&id6, "localhost", "1117")
+	node7 := makeDHTNode(&id7, "localhost", "1118")
+
+	node0.addToRing(node1)
+	node0.addToRing(node6)
+	node6.addToRing(node7)
+
+/*
+	fmt.Print(node0.lookup(node7.ID).ID + "\n")
+	fmt.Print(node1.lookup(node7.ID).ID + "\n")
+	node0.find_distance([]byte("07"), 3)
+	node1.find_distance([]byte("07"), 3)*/
+
+	node1.printFinger(1,3)
+	node1.printFinger(2,3)
+	node1.printFinger(3,3)
+	
+}
+
 
 func TestThisProg(t *testing.T){
 	// note nil arg means automatically generate ID, e.g. f38f3b2dcc69a2093f258e31902e40ad33148385
@@ -53,14 +81,16 @@ func TestThisProg(t *testing.T){
 	node1.addToRing(node2)
 	node1.addToRing(node3)
 	node1.addToRing(node4)
-	node4.addToRing(node5)
-	node3.addToRing(node6)
+	node1.addToRing(node5)
+  node3.addToRing(node6)
 	node3.addToRing(node7)
 
 	fmt.Println("------------------------------------------------------------------------------------------------")
 	fmt.Println("RING STRUCTURE")
 	fmt.Println("------------------------------------------------------------------------------------------------")
-	node1.lookup("03")
+//	fmt.Print(node0.lookup("07").ID + "\n")
+	node0.find_distance([]byte("07"), 3)
+	node5.printRing()
 	fmt.Println("------------------------------------------------------------------------------------------------")
 
 }
@@ -78,7 +108,7 @@ func TestThisProg(t *testing.T){
  * d8b6ac320d92fe71551bed2f702ba6ef2907283e 1237215742469423719453176640534983456657032816702
  * ee33f5aaf7cf6a7168a0f3a4449c19c9b4d1e399 1359898542148650805696846077009990511357036979097
  */
-/*func TestRingSetup(t *testing.T) {
+func TestRingSetup(t *testing.T) {
 	// note nil arg means automatically generate ID, e.g. f38f3b2dcc69a2093f258e31902e40ad33148385
 	node1 := makeDHTNode(nil, "localhost", "1111")
 	node2 := makeDHTNode(nil, "localhost", "1112")
@@ -104,7 +134,7 @@ func TestThisProg(t *testing.T){
 	fmt.Println("------------------------------------------------------------------------------------------------")
 	node1.printRing()
 	fmt.Println("------------------------------------------------------------------------------------------------")
-}*/
+}
 
 /*
  * Example of expected output.
@@ -114,7 +144,7 @@ func TestThisProg(t *testing.T){
  * c588f83243aeb49288d3fcdeb6cc9e68f9134dce is respoinsible for cba8c6e5f208b9c72ebee924d20f04a081a1b0aa
  * c588f83243aeb49288d3fcdeb6cc9e68f9134dce is respoinsible for cba8c6e5f208b9c72ebee924d20f04a081a1b0aa
  */
-/*func TestLookup(t *testing.T) {
+func TestLookup(t *testing.T) {
 	node1 := makeDHTNode(nil, "localhost", "1111")
 	node2 := makeDHTNode(nil, "localhost", "1112")
 	node3 := makeDHTNode(nil, "localhost", "1113")
@@ -145,15 +175,15 @@ func TestThisProg(t *testing.T){
 	fmt.Println("str=" + str)
 	fmt.Println("hashKey=" + hashKey)
 
-	fmt.Println("node 1: " + node1.lookup(hashKey).nodeId + " is respoinsible for " + hashKey)
-	fmt.Println("node 5: " + node5.lookup(hashKey).nodeId + " is respoinsible for " + hashKey)
+	fmt.Println("node 1: " + node1.lookup(hashKey).ID + " is respoinsible for " + hashKey)
+	fmt.Println("node 5: " + node5.lookup(hashKey).ID + " is respoinsible for " + hashKey)
 
 	fmt.Println("------------------------------------------------------------------------------------------------")
 
-}*/
+}
 
-/*
- * Example of expected output.
+
+ /* Example of expected output.
  *
  * calulcating result = (n+2^(k-1)) mod (2^m)
  * n            0
@@ -191,7 +221,8 @@ func TestThisProg(t *testing.T){
  * successor    04
  * distance     4
  */
-/*func TestFinger3bits(t *testing.T) {
+
+func TestFinger3bits(t *testing.T) {
 	id0 := "00"
 	id1 := "01"
 	id2 := "02"
@@ -229,7 +260,7 @@ func TestThisProg(t *testing.T){
 	node3.testCalcFingers(2, 3)
 	fmt.Println("")
 	node3.testCalcFingers(3, 3)
-}*/
+}
 
 /*
  * Example of expected output.
@@ -294,7 +325,7 @@ func TestThisProg(t *testing.T){
  * successor    d0a43af3a433353909e09739b964e64c107e5e92
  * distance     508258282811496687056817668076520806659544776736
  */
-/*func TestFinger160bits(t *testing.T) {
+func TestFinger160bits(t *testing.T) {
 	// note nil arg means automatically generate ID, e.g. f38f3b2dcc69a2093f258e31902e40ad33148385
 	node1 := makeDHTNode(nil, "localhost", "1111")
 	node2 := makeDHTNode(nil, "localhost", "1112")
@@ -331,4 +362,4 @@ func TestThisProg(t *testing.T){
 	fmt.Println("")
 	node3.testCalcFingers(160, 160)
 	fmt.Println("")
-}*/
+}
