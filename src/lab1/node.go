@@ -7,7 +7,7 @@ import (
 
 type Node struct { 
 	ID string
-  	LocalIP string
+  LocalIP string
 	LocalPort string
 	Successor *Node
 	Fingers map[int]*Node
@@ -63,7 +63,7 @@ func (currentNode* Node) addToRing(newNode* Node) {
 }
 
 func (curNode* Node) lookup(id string) *Node{
-	//Task 1 Objective 1
+	//Task 1 Objective 1, recursive loop
 	/*if(curNode.Successor == nil){
 		//fmt.Printf("Node-%s is responsible for %s \n", curNode.ID, id)
 		return curNode
@@ -77,39 +77,32 @@ func (curNode* Node) lookup(id string) *Node{
 	}
 	return nil*/
 
-	fmt.Printf("Current Node-%s\n", curNode.ID)
+	
 	//Task2 Objective 1
-	if curNode.Successor == nil {
-  	fmt.Printf("Successor is nil\n")
+	if curNode.Successor == nil { //No successor, so this node is responsible
 		return curNode	
-	} else if between([]byte(curNode.ID), []byte(curNode.Successor.ID), []byte(id)) {
-  	fmt.Printf("Id is between\n")
+	} else if between([]byte(curNode.ID), []byte(curNode.Successor.ID), []byte(id)) { //Between this and successor, so this is responsible 
 		return curNode
-	} else if len(curNode.Fingers) != 0 {
-		distToID := distance([]byte(curNode.ID), []byte(id), 3) //Distance to the ID we are looking for
-		lastFinger := curNode.Fingers[len(curNode.Fingers)] //Last finger node
-	 	dist3 := distance([]byte(curNode.ID), []byte(lastFinger.ID), 3) //Find distance between currentNode and last finger node
+	} else if len(curNode.Fingers) != 0 { //The finger table is not empty, so check it
+		lastFinger := curNode.Fingers[len(curNode.Fingers)] //Last finger node in the map
 
-		//Distance is greater or equal than furthest finger node, so just send it directly there
-		if lastFinger.ID != curNode.ID && distToID.Cmp(dist3) == 1 || distToID.Cmp(dist3) == 0 {
-			fmt.Printf("Cur-%s and last-%s\n", curNode.ID, lastFinger.ID)
+		//Node we are looking for is not between current and the last finger, so just send it to last finger directly
+		if !between([]byte(curNode.ID), []byte(lastFinger.ID), []byte(id)) {
 			return lastFinger.lookup(id) 
 		} else { //Id is between some other finger
-			//Plan is to loop through all fingers and see if they are between the id we are looking for
-			for i := 1 ; i < (len(curNode.Fingers)+1); i++ { 
-				nextFinger := curNode.Fingers[i]
-				//If not, continue
-				if !between([]byte(nextFinger.ID), []byte(nextFinger.Successor.ID), []byte(id)) { 					
-					continue		
+			//Loop through all fingers and see if they are between the id we are looking for		
+			for key, nextFinger := range curNode.Fingers {
+				if between([]byte(nextFinger.ID), []byte(nextFinger.Successor.ID), []byte(id)) { 					
+					return nextFinger.lookup(id) 				
 				} else {
-					return nextFinger.lookup(id) 		
+					continue
 				}
-			}
+			}			
 		}
 	} else {
-		return curNode.Successor.lookup(id)
+		return curNode.Successor.lookup(id) //No finger table, just send request to successor node
 	}
-	return curNode.Successor.lookup(id)
+	return curNode.Successor.lookup(id) //Default sending it to successor
 }
 
 func (curNode* Node) printRing(){
@@ -149,6 +142,17 @@ func (curNode* Node) updateOthersFinger(){
 	}
 }
 
+func (curNode* Node) testCalcFingers(k int, m int) {
+	calcFinger([]byte(curNode.ID), k, m)
+	fmt.Printf("Finger %d for Node-%s is Node-%s\n", k, curNode.ID, curNode.Fingers[k].ID)
+}
+
+func (curNode* Node) printFinger(k int, m int) {
+	calcFinger([]byte(curNode.ID), k, m)
+	fmt.Printf("Finger %d for Node-%s is Node-%s\n", k, curNode.ID, curNode.Fingers[k].ID)
+}
+
+
 func (curNode* Node) find_distance(b []byte, bits int) *big.Int{
 
 	result := distance([]byte(curNode.ID), b, bits)
@@ -156,16 +160,10 @@ func (curNode* Node) find_distance(b []byte, bits int) *big.Int{
 	return result
 }
 
-
-func (curNode* Node) testCalcFingers(k int, m int) {
-	calcFinger([]byte(curNode.ID), k, m)
+func (curNode* Node) is_between(b, id string) bool{
+	return between([]byte(curNode.ID), []byte(b), []byte(id))
 }
 
-func (curNode* Node) printFinger(k int, m int) {
-	calcFinger([]byte(curNode.ID), k, m)
-	fmt.Printf("Finger %d for Node-%s is Node-%s\n", k, curNode.ID, curNode.Fingers[k].ID)
-	
-}
 
 /*
 func (curNode* Node) find_successor(id string) *Node{

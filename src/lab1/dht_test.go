@@ -9,6 +9,47 @@ import (
 // test cases can be run by calling e.g. go test -test.run TestRingSetup
 // go run test will run all tests
 
+func TestThisProg3(t *testing.T) {
+	node1 := makeDHTNode(nil, "localhost", "1111")
+	node2 := makeDHTNode(nil, "localhost", "1112")
+	node3 := makeDHTNode(nil, "localhost", "1113")
+	node4 := makeDHTNode(nil, "localhost", "1114")
+	node5 := makeDHTNode(nil, "localhost", "1115")
+	node6 := makeDHTNode(nil, "localhost", "1116")
+	node7 := makeDHTNode(nil, "localhost", "1117")
+	node8 := makeDHTNode(nil, "localhost", "1118")
+	node9 := makeDHTNode(nil, "localhost", "1119")
+
+	node1.addToRing(node2)
+	node1.addToRing(node3)
+	node1.addToRing(node4)
+	node4.addToRing(node5)
+	node3.addToRing(node6)
+	node3.addToRing(node7)
+	node3.addToRing(node8)
+	node7.addToRing(node9)
+
+	fmt.Println("------------------------------------------------------------------------------------------------")
+	fmt.Println("RING STRUCTURE")
+	fmt.Println("------------------------------------------------------------------------------------------------")
+	node1.printRing()
+	fmt.Println("------------------------------------------------------------------------------------------------")
+	node1.find_distance([]byte(node9.ID), 3)
+	node1.find_distance([]byte(node2.ID), 3)
+	node1.find_distance([]byte(node3.ID), 3)
+	fmt.Printf("Is Node-%s between Node-%s and Node-%s= %s\n", node2.ID, node1.ID, node5.ID, node1.is_between(node5.ID, node2.ID))	
+	fmt.Printf("Is Node-%s between Node-%s and Node-%s= %s\n", node3.ID, node1.ID, node5.ID, node1.is_between(node5.ID, node3.ID))
+	fmt.Printf("Is Node-%s between Node-%s and Node-%s= %s\n", node4.ID, node1.ID, node5.ID, node1.is_between(node5.ID, node4.ID))
+	fmt.Printf("Is Node-%s between Node-%s and Node-%s= %s\n", node6.ID, node1.ID, node5.ID, node1.is_between(node5.ID, node6.ID))
+	node1.printFinger(1, 3)
+	node1.printFinger(2, 3)
+	node1.printFinger(3, 3)
+	node2.printFinger(1, 3)
+	node3.printFinger(1, 3)
+	node4.printFinger(1, 3)
+}
+
+
 func TestThisProg2(t *testing.T) {
 	id0 := "00"
 	id1 := "01"
@@ -104,6 +145,9 @@ func TestThisProg(t *testing.T){
 //	fmt.Print(node0.lookup("07").ID + "\n")
 	node0.find_distance([]byte("07"), 3)
 	node5.printRing()
+	node1.printFinger(1, 3)
+	node1.printFinger(2, 3)
+	node1.printFinger(3, 3)
 	fmt.Println("------------------------------------------------------------------------------------------------")
 
 }
@@ -365,7 +409,7 @@ func TestFinger160bits(t *testing.T) {
 	node1.printRing()
 	fmt.Println("------------------------------------------------------------------------------------------------")
 
-	node3.testCalcFingers(0, 160)
+	//node3.testCalcFingers(0, 160)
 	fmt.Println("")
 	node3.testCalcFingers(1, 160)
 	fmt.Println("")
