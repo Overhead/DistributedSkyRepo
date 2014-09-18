@@ -12,20 +12,20 @@ import (
 func TestThisProg2(t *testing.T) {
 	id0 := "00"
 	id1 := "01"
-	id2 := "02"
-	id6 := "06"
+//	id2 := "02"
+	id5 := "05"
 	id7 := "07"
 
 	node0 := makeDHTNode(&id0, "localhost", "1111")
 	node1 := makeDHTNode(&id1, "localhost", "1112")
-	node2 := makeDHTNode(&id2, "localhost", "1112")
-	node6 := makeDHTNode(&id6, "localhost", "1117")
+	//node2 := makeDHTNode(&id2, "localhost", "1112")
+	node5 := makeDHTNode(&id5, "localhost", "1117")
 	node7 := makeDHTNode(&id7, "localhost", "1118")
 
 	node0.addToRing(node1)
-	node0.addToRing(node6)
-	node6.addToRing(node7)
-	node6.addToRing(node2)
+	node0.addToRing(node5)
+	node5.addToRing(node7)
+	//node6.addToRing(node2)
 
 /*
 	fmt.Print(node0.lookup(node7.ID).ID + "\n")
@@ -33,10 +33,11 @@ func TestThisProg2(t *testing.T) {
 	node0.find_distance([]byte("07"), 3)
 	node1.find_distance([]byte("07"), 3)*/
 
+
 	node1.printFinger(1,3)
 	node1.printFinger(2,3)
 	node1.printFinger(3,3)
-	node0.printFinger(1,3)
+	/*node0.printFinger(1,3)
 	node0.printFinger(2,3)
 	node0.printFinger(3,3)
 	node6.printFinger(1,3)
@@ -44,7 +45,7 @@ func TestThisProg2(t *testing.T) {
 	node6.printFinger(3,3)
 	node2.printFinger(1,3)
 	node2.printFinger(2,3)
-	node2.printFinger(3,3)
+	node2.printFinger(3,3)*/
 	
 }
 

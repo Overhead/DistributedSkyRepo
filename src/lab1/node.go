@@ -7,7 +7,7 @@ import (
 
 type Node struct { 
 	ID string
-  LocalIP string
+  	LocalIP string
 	LocalPort string
 	Successor *Node
 	Fingers map[int]*Node
@@ -38,6 +38,7 @@ func makeDHTNode (id *string, localAddress string, localPort string) (*Node) {
 
 func (currentNode* Node) addToRing(newNode* Node) {
 
+	fmt.Printf("Adding Node-%s to ring\n", newNode.ID)
 	if currentNode.Successor == nil { //When first node is added to ring
 		currentNode.Successor = newNode
 		newNode.Successor = currentNode
@@ -52,8 +53,8 @@ func (currentNode* Node) addToRing(newNode* Node) {
 	if node != nil {
 		newNode.Successor = node.Successor
 		node.Successor = newNode
-		currentNode.initFingers()
-		currentNode.updateOthersFinger()
+		node.initFingers()
+		node.updateOthersFinger()
 		//fmt.Printf("2 Node-%s added successor %s \n", node.ID, newNode.ID)	
 	} else {
 			fmt.Printf("3 Node is nil \n")	
@@ -61,44 +62,54 @@ func (currentNode* Node) addToRing(newNode* Node) {
 	
 }
 
-func (currentNode* Node) lookup(id string) *Node{
+func (curNode* Node) lookup(id string) *Node{
 	//Task 1 Objective 1
-	if(currentNode.Successor == nil){
-		//fmt.Printf("Node-%s is responsible for %s \n", currentNode.ID, id)
-		return currentNode
-	} else if between([]byte(currentNode.ID), []byte(currentNode.Successor.ID), []byte(id)) {
-		//fmt.Printf("Node-%s is responsible for %s \n", currentNode.ID, id)
-		return currentNode
+	/*if(curNode.Successor == nil){
+		//fmt.Printf("Node-%s is responsible for %s \n", curNode.ID, id)
+		return curNode
+	} else if between([]byte(curNode.ID), []byte(curNode.Successor.ID), []byte(id)) {
+		//fmt.Printf("Node-%s is responsible for %s \n", curNode.ID, id)
+		return curNode
 	} else 
 	{
-		//fmt.Printf("Node-%s is NOT responsible for %s \n", currentNode.ID, id)
-		return currentNode.Successor.lookup(id) //Do same method, just for successor node
+		//fmt.Printf("Node-%s is NOT responsible for %s \n", curNode.ID, id)
+		return curNode.Successor.lookup(id) //Do same method, just for successor node
 	}
-	return nil
+	return nil*/
 
-
+	fmt.Printf("Current Node-%s\n", curNode.ID)
 	//Task2 Objective 1
-/*
-	if currentNode.Successor == nil {
-		return currentNode	
-	} else if between([]byte(currentNode.ID), []byte(currentNode.Successor.ID), []byte(id)) {
-		return currentNode
-	} else {
+	if curNode.Successor == nil {
+  	fmt.Printf("Successor is nil\n")
+		return curNode	
+	} else if between([]byte(curNode.ID), []byte(curNode.Successor.ID), []byte(id)) {
+  	fmt.Printf("Id is between\n")
+		return curNode
+	} else if len(curNode.Fingers) != 0 {
 		distToID := distance([]byte(curNode.ID), []byte(id), 3) //Distance to the ID we are looking for
-		lastFingerIndex := curNode.Fingers[len(curNode.Fingers]) //Index of the last finger
-	 	dist3 := distance([]byte(curNode.ID), []byte(curNode.Fingers[lastFingerIndex), 3) //Find idstance between currentNode and last finger node
-		if distToID >= dist3 { //Distance is greater or equal than furthest finger node, so just send it directly there
-			return currentNode.Fingers[].lookup(id) 
-		} else { //Id is between some other finger
+		lastFinger := curNode.Fingers[len(curNode.Fingers)] //Last finger node
+	 	dist3 := distance([]byte(curNode.ID), []byte(lastFinger.ID), 3) //Find distance between currentNode and last finger node
 
-			for i, nextFinger, := 1, currentNode.Fingers[i] ; i < (len(currentNode.Fingers)+1); i++) //Plan is to loop through all fingers and see if they are between the id we are looking for
-				if(!between([]byte(currentNode.ID), []byte(nextFinger.ID), []byte(id)) { //If not, just increment and try nextone
-					nextFinger = currentNode.Fingers[i]		
-				} else {	
-					return currentNode.Fingers[i].lookup(id) 
-				}	
-		} 
-	}*/
+		//Distance is greater or equal than furthest finger node, so just send it directly there
+		if lastFinger.ID != curNode.ID && distToID.Cmp(dist3) == 1 || distToID.Cmp(dist3) == 0 {
+			fmt.Printf("Cur-%s and last-%s\n", curNode.ID, lastFinger.ID)
+			return lastFinger.lookup(id) 
+		} else { //Id is between some other finger
+			//Plan is to loop through all fingers and see if they are between the id we are looking for
+			for i := 1 ; i < (len(curNode.Fingers)+1); i++ { 
+				nextFinger := curNode.Fingers[i]
+				//If not, continue
+				if !between([]byte(nextFinger.ID), []byte(nextFinger.Successor.ID), []byte(id)) { 					
+					continue		
+				} else {
+					return nextFinger.lookup(id) 		
+				}
+			}
+		}
+	} else {
+		return curNode.Successor.lookup(id)
+	}
+	return curNode.Successor.lookup(id)
 }
 
 func (curNode* Node) printRing(){
