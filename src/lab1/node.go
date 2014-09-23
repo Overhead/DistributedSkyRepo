@@ -91,7 +91,7 @@ func (curNode* Node) lookup(id string) *Node{
 			return lastFinger.lookup(id) 
 		} else { //Id is between some other finger
 			//Loop through all fingers and see if they are between the id we are looking for		
-			for key, nextFinger := range curNode.Fingers {
+			for _, nextFinger := range curNode.Fingers {
 				if between([]byte(nextFinger.ID), []byte(nextFinger.Successor.ID), []byte(id)) { 					
 					return nextFinger.lookup(id) 				
 				} else {
