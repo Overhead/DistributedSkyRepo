@@ -1,5 +1,5 @@
 
-package lab2
+package dht
 
 import (
 	"fmt"
@@ -10,8 +10,8 @@ import (
 // go run test will run all tests
 
 func TestNetwork(t *testing.T) {
-	DHTNodeMain("localhost", 2020, "", 0)
-	DHTNodeMain("localhost", 2021, "localhost", 2020)
+		DHTNodeMain("localhost", 2020, "", 0)
+		DHTNodeMain("localhost", 2021, "localhost", 2020)
 }
 
 func TestThisProg3(t *testing.T) {
