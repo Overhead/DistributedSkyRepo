@@ -2,7 +2,6 @@ package main
 
 import (
 	"fmt"
-	"math/big"
 	"net"
 	"encoding/json"
   "flag"
@@ -52,7 +51,9 @@ func (transport *Transport) send(msg *Msg) {
 	defer conn.Close()
 	json, err := json.Marshal(msg)
 	checkError(err)
+	//fmt.Printf("Writing json to target-%s: %s\n",udpAddr, json)
 	_, err = conn.Write(json)
+	checkError(err)
 }
 
 func handleRequest(len int, buffer [512]byte, curNode *Node, transport *Transport) {
@@ -109,6 +110,20 @@ func handleRequest(len int, buffer [512]byte, curNode *Node, transport *Transpor
 						if msg.Src != msg.Dst {
 							transport.send(&msg) //Tell successor to do the same
 						}
+		case 9: //Ping request
+						fmt.Printf("Got ping request from %s\n", msg.Src)
+						reply := Msg{}
+						reply.Action = 10
+						reply.Key = curNode.ID
+						reply.NextKey = curNode.Successor.ID
+						reply.Src = fmt.Sprintf("%s:%d",curNode.LocalIP,curNode.LocalPort) //Set the nodes address to src
+						reply.Dst = msg.Src //Send msg back to the one it was retreived from
+						reply.NextAddr = fmt.Sprintf("%s:%d",curNode.Successor.IP,curNode.Successor.Port)
+						transport.send(&reply)
+	
+		case 10: //Ping reply
+						fmt.Printf("Got ping reply from %s\n", msg.Src)
+						curNode.msgChannel <- &msg
 		}
 
 }
@@ -145,7 +160,7 @@ func (currentNode* Node) addToRing(newNode* RemoteNode) {
 		newNode.sendUpdateSuccessor(currentNode.ID,currentNode.LocalIP, currentNode.LocalPort) 
 		currentNode.initFingers()
 		currentNode.updateOthersFinger()
-		fmt.Printf("1 Node-%d added successor %d \n", currentNode.LocalPort, newNode.Port)
+		//fmt.Printf("1 Node-%d added successor %d \n", currentNode.LocalPort, newNode.Port)
 		return 
 	}
 
@@ -159,7 +174,7 @@ func (currentNode* Node) addToRing(newNode* RemoteNode) {
 		currentNode.sendUpdateFingerTable(node.IP, node.Port)
 		//fmt.Printf("2 Node-%d added successor %d \n", node.Port, newNode.Port)
 	} else {
-			fmt.Printf("3 Node is nil \n")	
+			fmt.Printf("3 Could not find any node\n")	
 	}
 	
 }
@@ -168,31 +183,41 @@ func (curNode* Node) lookup(id string) *RemoteNode {
 	if curNode.Successor == nil { //No successor, so this node is responsible
 		suc := RemoteNode{curNode.Successor.ID, curNode.Successor.IP, curNode.Successor.Port, nil}
 		rm := RemoteNode{curNode.ID, curNode.LocalIP, curNode.LocalPort, &suc}
-		fmt.Printf("Nil suc\n")
+		fmt.Printf("Returning lookup with this Node-%s\n",curNode.ID)
 		return &rm
 	} else if dht.Between([]byte(curNode.ID), []byte(curNode.Successor.ID), []byte(id)) { //Between this and successor, so this is responsible 
 		suc := RemoteNode{curNode.Successor.ID, curNode.Successor.IP, curNode.Successor.Port, nil}
 		rm := RemoteNode{curNode.ID, curNode.LocalIP, curNode.LocalPort, &suc}
-		fmt.Printf("Between this and successor\n")
+		fmt.Printf("Returning lookup with this Node-%s\n",curNode.ID)
 		return &rm
 	} else if len(curNode.Fingers) != 0 { //The finger table is not empty, so check it
 		lastFinger := curNode.Fingers[len(curNode.Fingers)] //Last finger node in the map
 
 		//Node we are looking for is not between current and the last finger, so just send it to last finger directly
 		if !dht.Between([]byte(curNode.ID), []byte(lastFinger.ID), []byte(id)) {
-			fmt.Printf("NOT between this and last finger\n")
-			rm, err := curNode.forwardLookup(id, lastFinger.IP, lastFinger.Port)
-			if err != nil {
-				fmt.Printf("Error on finger-lookup %s", err)
+			//fmt.Printf("Ping last finger Node-%s\n", lastFinger.ID)
+			//if curNode.ping(lastFinger.IP, lastFinger.Port) {	
+					fmt.Printf("Forwardarding lookup to last finger Node-%s\n", lastFinger.ID)
+					rm := curNode.forwardLookup(id, lastFinger.IP, lastFinger.Port)
+					return rm //default return			
+			/*} else {
+					return nil	
+			}*/
+			
+		} else { //Just send to next node when id is not between last finger and current
+			//fmt.Printf("Ping successor Node-%s\n", curNode.Successor.ID)
+			//if curNode.ping(curNode.Successor.IP, curNode.Successor.Port) {				
+				fmt.Printf("Forwardarding lookup to successor Node-%s\n", curNode.Successor.IP)
+				rm := curNode.forwardLookup(id, curNode.Successor.IP, curNode.Successor.Port)
+				return rm
+			/*} else {
 				return nil
-			} else {
-					return rm //default return
-			}
-		} else { //Id is between some other finger
+			}*/
+			
 			//Loop through all fingers and see if they are between the id we are looking for		
-			for _, nextFinger := range curNode.Fingers {
+			/*for _, nextFinger := range curNode.Fingers {
 				if dht.Between([]byte(nextFinger.ID), []byte(nextFinger.Successor.ID), []byte(id)) { 		//If node we are looking for are between current and it's successor, send it there			
-					fmt.Printf("Send to finger %s\n", nextFinger.ID)					
+					fmt.Printf("Is between Node-%s and Node-%s\n", nextFinger.ID, nextFinger.Successor.ID)					
 					rm, err := curNode.forwardLookup(id, nextFinger.IP, nextFinger.Port)
 					if err != nil {
 						fmt.Printf("Error on finger-lookup %s", err)
@@ -203,9 +228,9 @@ func (curNode* Node) lookup(id string) *RemoteNode {
 				} else {
 					continue //Not between, then continue loop
 				}
-			}			
+			}	*/		
 		}
-	} else { //Empty finger-table, so send request to successor
+	} /*else { //Empty finger-table, so send request to successor
 		fmt.Printf("Empty finger table, send to successor\n")
 		rm, err := curNode.forwardLookup(id, curNode.Successor.IP, curNode.Successor.Port)
 		if err != nil {
@@ -213,38 +238,37 @@ func (curNode* Node) lookup(id string) *RemoteNode {
 		} else {
 				return  rm
 		}
-	}
-		fmt.Printf("default lookup, send to successor\n")
-		rm, err := curNode.forwardLookup(id, curNode.Successor.IP, curNode.Successor.Port) //Default lookup on successor
-		if err != nil {
-			fmt.Printf("Error on lookup %s", err)
-			return nil
-		} else {
-				return rm
-		}
+	}*/
+		//fmt.Printf("default lookup, send to successor\n")
+		rm := curNode.forwardLookup(id, curNode.Successor.IP, curNode.Successor.Port) //Default lookup on successor
+		return rm
 }
 
-func (curNode* Node) forwardLookup(id, remoteIp string, remotePort int) (*RemoteNode, error) {
+func (curNode* Node) forwardLookup(id, remoteIp string, remotePort int) *RemoteNode {
  	msg := Msg{}
 	msg.Action = 3
 	msg.Key = id
-  msg.Dst = fmt.Sprintf("%s:%d",remoteIp, remotePort)
   msg.Src = fmt.Sprintf("%s:%d",curNode.LocalIP,curNode.LocalPort)
+  msg.Dst = fmt.Sprintf("%s:%d",remoteIp, remotePort)
 
+	//fmt.Printf("Sending forward to addr-%s\n", msg.Dst)
 	curNode.Transp.send(&msg)
-
+	//fmt.Printf("1 Getting response\n")
 	answ, errMsg := curNode.getMsg(5)
-	
+	//fmt.Printf("2 Getting response-%s\n", answ)
+
 	if answ != nil {
+		//fmt.Printf("Getting response-%s\n", answ)
 		remoteAddr, err := net.ResolveUDPAddr("udp", answ.Src) //Get the addr of remote node
 		checkError(err)
 		sucAddr, err := net.ResolveUDPAddr("udp", answ.NextAddr)
 		checkError(err)
 		suc := RemoteNode{answ.NextKey, sucAddr.IP.String(), sucAddr.Port, nil}
 		rm := RemoteNode{answ.Key, remoteAddr.IP.String(), remoteAddr.Port, &suc}
-		return  &rm, nil  
+		return  &rm  
 	} else {
-		return nil, errMsg
+		fmt.Printf("No return msg, Error: %s\n", errMsg)
+		return nil
 	}
 }
 
@@ -283,12 +307,6 @@ func (curNode* Node) printRing() *Msg{
   msg.Dst = fmt.Sprintf("%s:%d",curNode.LocalIP,curNode.LocalPort)
   msg.Src = fmt.Sprintf("%s:%d",curNode.LocalIP,curNode.LocalPort)
 	return &msg
-/*
-	fmt.Printf("%s \n",curNode.ID) //Print First
-	for nextN, thisN := curNode.Successor, curNode ; nextN.ID != thisN.ID; {
-		fmt.Printf("%s \n",nextN.ID) //Print second, then loop and print rest until ID is same as first
-		nextN = nextN.Successor
-	}*/
 }
 
 func (curNode* Node) initFingers(){
@@ -319,37 +337,44 @@ func (curNode* Node) getMsg(n int) (*Msg, error) {
 	if n == 0 {
 		return nil, errors.New("No messages retrieved")
 	} else {
-		msg := <- curNode.msgChannel		
-		if msg == nil {
-				time.Sleep(1 * 1e9)
+		//fmt.Printf("1 Getting Msg from channel\n")	
+		select {
+		  case msg := <-curNode.msgChannel:
+					//fmt.Printf("2 Got Msg from channel -%s\n", msg)	
+		      return msg, nil
+		  default:
+	      //fmt.Printf("No msg on channel lookup, trying again\n")
+				time.Sleep(500 * time.Millisecond)
 				return curNode.getMsg(n-1)
-		}	else {
-			return msg, nil
-		}			
+		  }	
 	}
 	return nil, errors.New("No messages retrieved")
 }
 
-func (curNode* Node) testCalcFingers(k int, m int) {
-	dht.CalcFinger([]byte(curNode.ID), k, m)
-	fmt.Printf("Finger %d for Node-%s is Node-%s\n", k, curNode.ID, curNode.Fingers[k].ID)
+func (curNode* Node) ping(ip string, port int) bool {
+	msg := Msg{}
+	msg.Action = 9
+	msg.Key = curNode.ID
+	msg.NextKey = curNode.Successor.ID
+	msg.Src = fmt.Sprintf("%s:%d",curNode.LocalIP,curNode.LocalPort) //Set the nodes address to src
+	msg.Dst = fmt.Sprintf("%s:%d",ip, port)
+	msg.NextAddr = fmt.Sprintf("%s:%d",curNode.Successor.IP,curNode.Successor.Port)
+	curNode.Transp.send(&msg)
+	
+	//time.Sleep(1000 * time.Millisecond)
+	answ, err := curNode.getMsg(3)
+
+	if answ != nil {
+		return true
+	} else {
+		fmt.Printf("No response on ping to Node-%s, Error: \n",msg.Dst, err)
+		return false
+	}
 }
 
 func (curNode* Node) printFinger(k int, m int) {
 	dht.CalcFinger([]byte(curNode.ID), k, m)
 	fmt.Printf("Finger %d for Node-%s is Node-%s\n", k, curNode.ID, curNode.Fingers[k].ID)
-}
-
-
-func (curNode* Node) find_distance(b []byte, bits int) *big.Int{
-
-	result := dht.Distance([]byte(curNode.ID), b, bits)
-	fmt.Printf("Disance from %s to %s is %d \n", curNode.ID, b, result)
-	return result
-}
-
-func (curNode* Node) is_between(b, id string) bool{
-	return dht.Between([]byte(curNode.ID), []byte(b), []byte(id))
 }
 
 func checkError(err error) {
@@ -380,7 +405,7 @@ func main() {
 	var buf [512]byte 
 	udpAddr, err := net.ResolveUDPAddr("udp", transport.bindAddress)
 	checkError(err)
-	fmt.Printf("Start listen on %s\n",udpAddr)
+	fmt.Printf("Start node-%s and listen on %s\n",node.ID, udpAddr)
 
 	conn, err := net.ListenUDP("udp", udpAddr)
 	defer conn.Close()
