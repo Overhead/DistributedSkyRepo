@@ -5,7 +5,7 @@ build:
 	export GOPATH=${CURDIR}; cd src; make
 
 setup:
-	export GOPATH=${CURDIR}; go get github.com/nu7hatch/gouuid;
+	export GOPATH=${CURDIR}; go get github.com/nu7hatch/gouuid; go get code.google.com/p/go.net/websocket;
 	
 clean:
 	rm -r -f pkg/*
