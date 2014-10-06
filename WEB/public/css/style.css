@@ -1,0 +1,75 @@
+/* Eléments principaux de la page */
+@import url("bootstrap.css")
+
+body
+{
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    color: #181818;
+}
+
+.btn-margins
+{
+	margin-right: 5px;
+}
+
+section h1, footer h1, nav a
+{
+    font-family: 'Trebuchet MS', Arial, sans-serif;
+    font-weight: normal;
+    #text-transform: uppercase;
+}
+
+/* Header */
+
+#titre_principal
+{
+    display: inline-block;
+}
+
+
+
+#logo, header h1
+{
+    display: inline-block;
+    margin-bottom: 20px;
+}
+
+#banniere_image
+{ 
+	background : transparent url("../images/YACSb.png") no-repeat; 
+	height : 200px; 
+	width : 401px; 
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 20px 
+} 
+
+
+
+/* Corps */
+
+article, aside
+{
+    display: inline-block;
+    vertical-align: top;
+    text-align: justify;
+	max-width: 80%;
+}
+
+/* Footer */
+
+footer
+{	
+	bottom: 0;
+	vertical-align: center;
+	text-align: center;
+    padding-top: 100px;
+}
+
+
+
+
+/*TABLE*/
+
+
+

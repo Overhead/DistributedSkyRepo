@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+
+<script type="text/javascript">
+
+var exampleSocket = new WebSocket("ws://localhost:2020/node");
+
+function sendText() {
+  // Construct a msg object containing the data the server needs to process the message from the chat client.
+  var msg = {
+    type: "message",
+    text: "test sending data",
+    id:   1,
+    date: Date.now()
+  };
+
+  // Send the msg object as a JSON-formatted string.
+  exampleSocket.send(JSON.stringify(msg));
+}
+
+exampleSocket.onmessage = function (event) {
+  console.log(event.data);
+}
+
+</script>
+
+<html>
+    <body>
+        <article class="center-block">  
+			<h1><%= title %> </h1>
+			<div class="form-group">
+			    <label for="inputNodeAddress">Node Address</label>
+			    <input type="text" class="form-control" id="inputNodeAddress" placeholder="Enter node-address">
+		  	</div>
+	  		<button onclick="sendText()" class="btn btn-primary">Test</button>
+		</article>
+     </body>
+</html>
+
