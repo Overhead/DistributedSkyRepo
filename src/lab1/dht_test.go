@@ -47,6 +47,7 @@ func TestThisProg3(t *testing.T) {
 	node2.printFinger(1, 3)
 	node3.printFinger(1, 3)
 	node4.printFinger(1, 3)
+	fmt.Print("Node responsible: " + node1.lookup("gas").ID + "\n")
 }
 
 
@@ -73,7 +74,6 @@ func TestThisProg2(t *testing.T) {
 	fmt.Print(node1.lookup(node7.ID).ID + "\n")
 	node0.find_distance([]byte("07"), 3)
 	node1.find_distance([]byte("07"), 3)*/
-
 
 	node1.printFinger(1,3)
 	node1.printFinger(2,3)
@@ -148,6 +148,7 @@ func TestThisProg(t *testing.T){
 	node1.printFinger(1, 3)
 	node1.printFinger(2, 3)
 	node1.printFinger(3, 3)
+	fmt.Print("Node responsible: " + node2.lookup("03").ID + "\n")
 	fmt.Println("------------------------------------------------------------------------------------------------")
 
 }

@@ -18,9 +18,9 @@ type Node struct {
 	LocalPort int
 	Successor *RemoteNode
 	Fingers map[int] *RemoteNode
-	//Connection *net.UDPConn
 	Transp *Transport
 	msgChannel chan *Msg
+	Data *dht.DataTable
 }
 
 type RemoteNode struct {
@@ -139,6 +139,7 @@ func makeDHTNode (id string, localAddress string, localPort int) (*Node) {
  
 	newNode.Successor = nil
 	newNode.Fingers = make(map[int]*RemoteNode)
+	newNode.Data = dht.CreateDataTable()
 	newNode.msgChannel = make(chan *Msg)
 	newNode.LocalIP = localAddress
 	newNode.LocalPort = localPort
@@ -208,8 +209,7 @@ func (curNode* Node) lookup(id string) *RemoteNode {
 			//fmt.Printf("Ping successor Node-%s\n", curNode.Successor.ID)
 			//if curNode.ping(curNode.Successor.IP, curNode.Successor.Port) {				
 				fmt.Printf("Forwardarding lookup to successor Node-%s\n", curNode.Successor.IP)
-				rm := curNode.forwardLookup(id, curNode.Successor.IP, curNode.Successor.Port)
-				return rm
+				return curNode.forwardLookup(id, curNode.Successor.IP, curNode.Successor.Port)
 			/*} else {
 				return nil
 			}*/
@@ -240,8 +240,8 @@ func (curNode* Node) lookup(id string) *RemoteNode {
 		}
 	}*/
 		//fmt.Printf("default lookup, send to successor\n")
-		rm := curNode.forwardLookup(id, curNode.Successor.IP, curNode.Successor.Port) //Default lookup on successor
-		return rm
+	  //Default lookup on successor
+		return curNode.forwardLookup(id, curNode.Successor.IP, curNode.Successor.Port)
 }
 
 func (curNode* Node) forwardLookup(id, remoteIp string, remotePort int) *RemoteNode {

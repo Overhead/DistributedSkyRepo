@@ -1,2 +1,2 @@
 build:
-	go install
+	go build -o ${GOPATH}/bin/node node.go;

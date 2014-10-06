@@ -1,3 +1,5 @@
 build:
+	go build dht
 	go build lab1
-	go build lab2
+	cd lab2; make
+	cd lab3; make
