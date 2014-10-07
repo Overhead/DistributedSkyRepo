@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+
+<script type="text/javascript">
+
+var wSocket;
+
+$( document ).ready(function() {
+    var addr = document.getElementById('node_ip').innerHTML
+    var key = document.getElementById('key_val').innerHTML
+      
+   	wSocket = new WebSocket("ws://" + addr + "/node");
+   		
+   	wSocket.onmessage = function (event) {
+	  console.log(event.data);
+	  NodeResponse(event)
+	}
+	
+	wSocket.onopen = function (event) {
+		var msg = {
+			    type: "message",
+			    text: "test sending GET",
+			    id:   1,
+			    date: Date.now()
+		    };
+		wSocket.send(JSON.stringify(msg));
+	}
+	
+});
+
+function NodeResponse(event) {
+	var msg = JSON.parse(event.data);
+	document.getElementById('resultfield').innerHTML = msg.text
+	wSocket.close()
+}
+
+</script>
+<p id="node_ip" class="hidden"><%= node_addr %></p>
+<p id="key_val" class="hidden"><%= key %></p>
+
+<html>
+	<p id="resultfield"></p>
+</html>

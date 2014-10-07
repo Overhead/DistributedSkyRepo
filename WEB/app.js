@@ -10,6 +10,21 @@ var express = require('express')
 
 var app = module.exports = express.createServer();
 
+//Modify param function to take in regex
+app.param(function(name, fn){
+	  if (fn instanceof RegExp) {
+	    return function(req, res, next, val){
+	      var captures;
+	      if (captures = fn.exec(String(val))) {
+	        req.params[name] = captures;
+	        next();
+	      } else {
+	        next('route');
+	      }
+	    }
+	  }
+	});
+
 // Configuration
 
 app.configure(function(){
@@ -46,7 +61,33 @@ express.compiler.compilers.less.compile = function(str, fn){
 app.get('/', routes.index);
 app.get('/home', routes.index);
 app.get('/manage', manage.index);
-app.get('/lab4', lab4.index);
+app.get('/lab4', lab4.index)
+
+app.param('node', /(.*)/);
+app.param('key', /(.*)/);
+
+app.get('/lab4/:node/storage', function(req, res) {
+	res.render('lab4show', { title: "Get" , node_addr: req.params.node[0] })
+});
+
+app.post('/lab4/:node/storage', function(req, res){
+	res.send("POST to storage: " + req.body.newVal)
+});
+
+app.put('/lab4/:node/storage/:key', function(req, res){
+	//res.send('ip: ' + req.params.node[0])
+	res.send("UPDATE to storage key: " + req.body.newVal)
+});
+
+app.del('/lab4/:node/storage/:key', function(req, res){
+	//res.send('ip: ' + req.params.node[0])
+	res.send("DELETE to storage key: " + req.params.key[0])
+});
+
+app.get('/lab4/:node/storage/:key', function(req, res){
+	//res.send('ip: ' + req.params.node[0])
+	res.render('lab4get', { title: "Get" , node_addr: req.params.node[0], key: req.params.key[0]});
+});
 
 
 app.listen(3000, function(){

@@ -1,39 +1,10 @@
-<!DOCTYPE html>
-
 <script type="text/javascript">
 
-var wSocket = new WebSocket("ws://localhost:8080/node");;
-
-wSocket.onmessage = function (event) {
-  console.log(event.data);
+function ConnectToNode() {
+	var addr = document.getElementById('inputNodeAddress').value
+	console.log("Addr: " + addr)
+	window.location.href = "/lab4/" + addr + "/storage/";
 }
-
-function sendGET() {
-  // Construct a msg object containing the data the server needs to process the message from the chat client.
-  var msg = {
-    type: "message",
-    text: "test sending GET",
-    id:   1,
-    date: Date.now()
-  };
-
-  // Send the msg object as a JSON-formatted string.
-  wSocket.send(JSON.stringify(msg));
-}
-
-function sendPUT() {
-  // Construct a msg object containing the data the server needs to process the message from the chat client.
-  var msg = {
-    type: "message",
-    text: "test sending PUT",
-    id:   1,
-    date: Date.now()
-  };
-
-  // Send the msg object as a JSON-formatted string.
-  wSocket.send(JSON.stringify(msg));
-}
-
 
 </script>
 
@@ -41,45 +12,15 @@ function sendPUT() {
     <body>
         <article class="center-block">  
 			<h1><%= title %> </h1>
-	      	<div class="form-group">
-			    <label for="inputNodeAddress">Node Address</label>
-			    <div class="row">
-			  		<div class="col-lg-3">
-			   			<input type="text" class="form-control " id="inputNodeAddress" placeholder="Enter node-address">
+				<div class="form-group">
+			    	<label for="inputNodeAddress">Node Address</label>
+			    	<div class="row">
+			  			<div class="col-lg-3">
+			   				<input type="text" class="form-control" id="inputNodeAddress" placeholder="Enter node-address">
+			  			</div>
 			  		</div>
-			  	</div>
-		  	</div>
-		  	
-	  		<div id="actionDropdown">
-		  		<div class="accordion" id="accordion2">
-				  <div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#GET">
-				       <button class="btn btn-large btn-success">Perform a Get request</button>
-				      </a>
-				    </div>
-				    <div id="GET" class="accordion-body collapse">
-				      <div class="accordion-inner">
-			      		<button onclick="sendGET()" class="btn btn-primary">Send GET</button>
-				      </div>
-				    </div>
-				  </div>
-				  <div class="accordion-group">
-				    <div class="accordion-heading">
-				      <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion2" href="#PUT">
-				        <button class="btn btn-large btn-success">Perform a Put request</button>
-				      </a>
-				    </div>
-				    <div id="PUT" class="accordion-body collapse"> 
-				      <div class="accordion-inner">
-				      	<h3> Put command for node </h3>
-				        <button onclick="sendPUT()" class="btn btn-primary">PUT</button>
-				      </div>
-				    </div>
-				  </div>
-				</div>
-			</div>
+		  		</div>
+				<button class="btn btn-large btn-primary" onclick="ConnectToNode()">Connect</button>
 		</article>
-     </body>
+	</body>
 </html>
-
