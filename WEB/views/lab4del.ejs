@@ -1,10 +1,8 @@
-<!DOCTYPE html>
-<script type="text/javascript">
 var wSocket;
 
 $( document ).ready(function() {
     var addr = document.getElementById('node_ip').innerHTML
-    var key = document.getElementById('key_val').innerHTML
+    var key = document.getElementById('key').innerHTML
       
    	wSocket = new WebSocket("ws://" + addr + "/node");
    		
@@ -16,7 +14,7 @@ $( document ).ready(function() {
 	wSocket.onopen = function (event) {
 		var msg = {
 			    type: "message",
-			    text: "test sending GET",
+			    text: "test sending delete with key: " + key,
 			    id:   1,
 			    date: Date.now()
 		    };
@@ -34,4 +32,4 @@ function NodeResponse(event) {
 </script>
 <p id="resultfield"></p>
 <p id="node_ip" style="visibility: hidden;"><%= node_addr %></p>
-<p id="key_val" style="visibility: hidden;"><%= key %></p>
+<p id="key" style="visibility: hidden;"><%= key %></p>

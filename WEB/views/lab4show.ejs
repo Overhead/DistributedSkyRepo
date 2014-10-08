@@ -6,6 +6,8 @@ var wSocket;
 
 $( document ).ready(function() {
     var addr = document.getElementById('node_ip').innerHTML
+    var action = document.getElementById('socket_action').innerHTML
+    console.log("Action: " + action)
       
    	wSocket = new WebSocket("ws://" + addr + "/node");
    		
@@ -14,59 +16,25 @@ $( document ).ready(function() {
 	  NodeResponse(event)
 	}
 	
-	/*wSocket.onopen = function (event) {
-		var msg = {
-			    type: "message",
-			    text: "test sending GET",
-			    id:   1,
-			    date: Date.now()
-		    };
-		wSocket.send(JSON.stringify(msg));
-	}*/
-	
+	if(typeof action != 'undefined') {
+		wSocket.onopen = function (event) {
+			var msg;
+			switch(parseInt(action)) {
+			    case 1: //POST
+			    	console.log("Post msg")
+			    	var newKey = document.getElementById('newVal').innerHTML
+			    	msg = {
+					    type: "message",
+					    text: "test sending POST: " + newKey,
+					    id:   1,
+					    date: Date.now()
+				    };
+					wSocket.send(JSON.stringify(msg));
+			    	break;
+			}
+		}	
+	}
 });
-
-function sendMsg(wSocket, action) {
-  // Construct a msg object containing the data the server needs to process the message from the chat client.
-  var msg;
-  switch(action) {
-    case 1: //GET
-    	msg = {
-		    type: "message",
-		    text: "test sending GET",
-		    id:   1,
-		    date: Date.now()
-	    };
-    	break;
-    case 2: //PUT
-    	msg = {
-		    type: "message",
-		    text: "test sending GET",
-		    id:   1,
-		    date: Date.now()
-	    };
-    	break;
-    case 3: //UPDATE
-    	msg = {
-		    type: "message",
-		    text: "test sending GET",
-		    id:   1,
-		    date: Date.now()
-	    };
-    	break;
-    case 4: //DELETE
-    	msg = {
-		    type: "message",
-		    text: "test sending GET",
-		    id:   1,
-		    date: Date.now()
-	    };
-    	break;
-    	
-  }
-  // Send the msg object as a JSON-formatted string.
-  wSocket.send(JSON.stringify(msg));
-}
 
 function NodeResponse(event) {
 	var msg = JSON.parse(event.data);
@@ -80,7 +48,7 @@ function DoGet(addr) {
 }
 
 function DoUpdate(addr) {
-	var key = document.getElementById('getInputKey').value
+	var key = document.getElementById('putInputKey').value
 	var newVal = document.getElementById('putInputValue').value
 	$.ajax({
 	   url: "/lab4/"+addr+"/storage/"+key,
@@ -93,7 +61,7 @@ function DoUpdate(addr) {
 }
 
 function DoDelete(addr) {
-	var key = document.getElementById('getInputKey').value
+	var key = document.getElementById('deleteInputKey').value
 	$.ajax({
 	   url: "/lab4/"+addr+"/storage/"+key,
 	   type: "DELETE",
@@ -109,18 +77,22 @@ function DoDelete(addr) {
     <body>
     <p id="node_ip" class="hidden"><%= node_addr %></p>
     
-    <% if( typeof socket_action != 'undefined' ){ %>
-    	<p id="socket_action" class="hidden"><%= socket_action %></p>
-	<%}%>
-    
+    <p id="socket_action" class="hidden">
+	    <% if( typeof socket_action != 'undefined' ){ %>
+	    	<%= socket_action %>
+		<%}%>
+	</p>
+	
+	<p id="newVal" class="hidden">
+	    <% if( typeof newVal != 'undefined' ){ %>
+	    	<%= newVal %>
+		<%}%>
+	</p>
+	    
         <article class="center-block">  
 			<h1> Connected to node <%= node_addr %> </h1>
 			</br>
-		    <div class="form-group">
-		    	<label for="getInputKey">Key value</label>
-		    	<input type="text" class="form-control" id="getInputKey" placeholder="Enter Key">
-		  	</div>
-			
+		    
 			<ul class="nav nav-tabs" role="tablist">
 			  <li class="active"><a href="#getTab" role="tab" data-toggle="tab">GET</a></li>
 			  <li><a href="#postTab" role="tab" data-toggle="tab">POST</a></li>
@@ -131,7 +103,11 @@ function DoDelete(addr) {
 			<div class="tab-content">
 			</br>
 			  <div class="tab-pane active" id="getTab">
-				  <button onclick="DoGet('<%= node_addr %>')" class="btn btn-primary">Execute GET</button>
+			  	<div class="form-group">
+		    		<label for="getInputKey">Key value</label>
+		    		<input type="text" class="form-control" id="getInputKey" placeholder="Enter Key">
+		  		</div>
+				<button onclick="DoGet('<%= node_addr %>')" class="btn btn-primary">Execute GET</button>
 			  </div>
 			  <div class="tab-pane" id="postTab">
 			  	<form action="/lab4/<%= node_addr %>/storage" method="POST">
@@ -143,6 +119,10 @@ function DoDelete(addr) {
 			  	</form>
 			  </div>
 			  <div class="tab-pane" id="putTab">
+			  	<div class="form-group">
+		    		<label for="putInputKey">Key value to update</label>
+		    		<input type="text" class="form-control" id="putInputKey" placeholder="Enter key to update">
+		  		</div>
 		  		<div class="form-group">
 			    	<label for="putInputValue">New value to be stored</label>
 			    	<input type="text" name="newVal" class="form-control" id="putInputValue" placeholder="Enter new value">
@@ -150,12 +130,16 @@ function DoDelete(addr) {
 			  	<button onclick="DoUpdate('<%= node_addr %>')" class="btn btn-warning">Execute PUT</button>
 			  </div>
 			  <div class="tab-pane" id="deleteTab">
+			  	<div class="form-group">
+		    		<label for="deleteInputKey">Key to delete</label>
+		    		<input type="text" class="form-control" id="deleteInputKey" placeholder="Enter key to delete">
+		  		</div>
 			  	<button onclick="DoDelete('<%= node_addr %>')" class="btn btn-danger">Execute DELETE</button>
 		  	  </div>
 			</div>
 			</br></br></br>
 			<h4> Result </h4>
-			<textarea class="form-control" rows="3"></textarea>
+			<textarea id="resultfield" class="form-control" rows="3"></textarea>
 		</article>
      </body>
 </html>

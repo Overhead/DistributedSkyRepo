@@ -7,6 +7,7 @@ var express = require('express')
   , routes = require('./routes')
   , lab4 = require('./routes/lab4')
   , manage = require('./routes/manage')
+  , requests = require('./public/javascripts/lab4.js').Request
 
 var app = module.exports = express.createServer();
 
@@ -67,26 +68,31 @@ app.param('node', /(.*)/);
 app.param('key', /(.*)/);
 
 app.get('/lab4/:node/storage', function(req, res) {
-	res.render('lab4show', { title: "Get" , node_addr: req.params.node[0] })
+	res.render('lab4show', { title: "Get" , node_addr: req.params.node[0]})
 });
 
 app.post('/lab4/:node/storage', function(req, res){
-	res.send("POST to storage: " + req.body.newVal)
+	//res.send("POST to storage: " + req.body.newVal)
+	console.log("Post: " + req.params.node[0] + " : " + req.body.newVal)
+	res.render('lab4show', { title: "Post done", node_addr: req.params.node[0], newVal: req.body.newVal, socket_action: 1 })
 });
 
 app.put('/lab4/:node/storage/:key', function(req, res){
-	//res.send('ip: ' + req.params.node[0])
-	res.send("UPDATE to storage key: " + req.body.newVal)
+	//res.send("UPDATE to storage key: " + req.body.newVal)
+	console.log("Post: " + req.params.node[0] + " : " + req.body.newVal)
+	res.render('lab4put', { title: "Put done", node_addr: req.params.node[0], key: req.params.key[0], newVal: req.body.newVal, socket_action: 2 })
 });
 
 app.del('/lab4/:node/storage/:key', function(req, res){
-	//res.send('ip: ' + req.params.node[0])
-	res.send("DELETE to storage key: " + req.params.key[0])
+	//res.send("DELETE to storage key: " + req.params.key[0])
+	console.log("Post: " + req.params.node[0] + " : " + req.body.newVal)
+	res.render('lab4del', { title: "Delete done", node_addr: req.params.node[0], key: req.params.key[0], socket_action: 3 })
 });
 
 app.get('/lab4/:node/storage/:key', function(req, res){
+	res.send(requests.DoNodeGet(req.params.node[0], req.params.key[0]));
 	//res.send('ip: ' + req.params.node[0])
-	res.render('lab4get', { title: "Get" , node_addr: req.params.node[0], key: req.params.key[0]});
+	//res.render('lab4get', { title: "Get" , node_addr: req.params.node[0], key: req.params.key[0] });//, layout: false });
 });
 
 
