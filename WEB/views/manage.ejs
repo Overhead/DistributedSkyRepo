@@ -1,7 +1,27 @@
-<!DOCTYPE html>
+<script type="text/javascript">
+
+function ConnectToNode() {
+	var addr = document.getElementById('inputNodeAddress').value
+	console.log("Addr: " + addr)
+	window.location.href = "/manage/" + addr;
+}
+
+</script>
+
 <html>
-	<body>
-		<h1> Heia <%= title %> </h1>
+    <body>
+        <article class="center-block">  
+			<h1><%= title %> </h1>
+				<div class="form-group">
+			    	<label for="inputNodeAddress">Node Address</label>
+			    	<div class="row">
+			  			<div class="col-lg-3">
+			   				<input type="text" class="form-control" id="inputNodeAddress" placeholder="Enter node-address">
+			  			</div>
+			  		</div>
+		  		</div>
+				<button class="btn btn-large btn-primary" onclick="ConnectToNode()">Connect</button>
+		</article>
 	</body>
 </html>
 

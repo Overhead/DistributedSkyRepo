@@ -1,0 +1,33 @@
+<script type="text/javascript">
+
+var wSocket;
+
+$( document ).ready(function() {
+    var addr = document.getElementById('node_ip').innerHTML
+      
+   	wSocket = new WebSocket("ws://" + addr + "/node");
+   		
+   	wSocket.onmessage = function (event) {
+	  NodeResponse(event)
+	}
+	
+	wSocket.onopen = function (event) {
+		var msg = {
+			type: "message",
+		    text: "Get list of nodes",
+	   		id:   1,
+		    date: Date.now()
+	    };
+		wSocket.send(JSON.stringify(msg));
+	}
+
+});
+
+</script>
+
+<html>
+    <body>
+    	<p id="node_ip" class="hidden"><%= node_addr %></p>
+    	<p id="result"> </p>
+	</body>
+</html>

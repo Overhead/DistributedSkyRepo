@@ -7,7 +7,6 @@ var express = require('express')
   , routes = require('./routes')
   , lab4 = require('./routes/lab4')
   , manage = require('./routes/manage')
-  , requests = require('./public/javascripts/lab4.js').Request
 
 var app = module.exports = express.createServer();
 var stringify = require('json-stable-stringify');
@@ -63,7 +62,6 @@ express.compiler.compilers.less.compile = function(str, fn){
 
 app.get('/', routes.index);
 app.get('/home', routes.index);
-app.get('/manage', manage.index);
 app.get('/lab4', lab4.index)
 
 app.param('node', /(.*)/);
@@ -181,6 +179,12 @@ app.get('/lab4/:node/storage/:key', function(req, res){
 	}
 });
 
+
+app.get('/manage', manage.index);
+
+app.get('/manage/:node', function(req, res) {
+	res.render('managenode', { title: "Node management" , node_addr: req.params.node[0]})
+});
 
 app.listen(3000, function(){
   console.log("Express server listening on port %d in %s mode", app.address().port, app.settings.env);

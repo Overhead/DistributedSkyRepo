@@ -1,17 +1,11 @@
 
 var MsgTypeEnum = 
 {
-	Handshake : 0,
-	Data : 1,
-	Heartbeat : 2,
-	Children : 3,
-	ChildJoined : 4,
-	ChildLeft : 5,
-	UpdateTags : 6,
-	SearchTags : 7,
-	GetTags : 8,
-	MakeImposter : 9,
-	Bye : 10	
+	GetKey : 0,
+	PutKey : 1,
+	PostKey : 2,
+	DeleteKey : 3,
+	ShowRing : 4
 }
 
 function Msg()
