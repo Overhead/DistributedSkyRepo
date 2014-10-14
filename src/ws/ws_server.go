@@ -5,7 +5,15 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"encoding/json"
 )
+
+type Msg struct {
+		Action int
+		Key string
+		NewKey string
+		Date int64
+}
 
 func echoHandler(ws *websocket.Conn) {
 	msg := make([]byte, 512)
@@ -14,6 +22,13 @@ func echoHandler(ws *websocket.Conn) {
 		log.Fatal(err)
 	}
 	fmt.Printf("Receive: %s\n", msg[:n])
+	var res Msg
+	json.Unmarshal([]byte(msg[:n]), &res)
+  
+	fmt.Println(res)
+	fmt.Println(res.Action)
+	fmt.Println(res.Key)
+	fmt.Println(res.Date)
 
 	m, err := ws.Write(msg[:n])
 	if err != nil {

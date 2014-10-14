@@ -1,11 +1,12 @@
 
 var MsgTypeEnum = 
 {
-	GetKey : 0,
-	PutKey : 1,
-	PostKey : 2,
-	DeleteKey : 3,
-	ShowRing : 4
+	Error : 0,
+	GetKey : 1,
+	PutKey : 2,
+	PostKey : 3,
+	DeleteKey : 4,
+	ShowRing : 5
 }
 
 function Msg()

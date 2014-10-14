@@ -76,10 +76,9 @@ app.post('/lab4/:node/storage', function(req, res){
 	console.log("Post: " + req.params.node[0] + " : " + req.body.newVal)
 	//res.render('lab4show', { title: "Post done", node_addr: req.params.node[0], newVal: req.body.newVal, socket_action: 1 })
 	var msg = {
-		type: "message",
-	    text: "test sending POST",
-	    id:   1,
-	    date: Date.now()
+			Action: 3,
+			Key: req.body.newVal.toString(),
+		    date: Date.now()
 	}
 	try {
 		var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
@@ -100,13 +99,13 @@ app.post('/lab4/:node/storage', function(req, res){
 
 app.put('/lab4/:node/storage/:key', function(req, res){
 	//res.send("UPDATE to storage key: " + req.body.newVal)
-	console.log("Post: " + req.params.node[0] + " : " + req.body.newVal)
+	console.log("Put: " + req.params.node[0] + " : " + req.body.newVal)
 	//res.render('lab4put', { title: "Put done", node_addr: req.params.node[0], key: req.params.key[0], newVal: req.body.newVal, socket_action: 2 })
 	var msg = {
-		type: "message",
-	    text: "test sending PUT",
-	    id:   1,
-	    date: Date.now()
+			Action: 2,
+			Key: req.params.key[0].toString(),
+			NewKey: req.body.newVal.toString(),
+		    date: Date.now()
 	}
 	try {
 		var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
@@ -127,13 +126,12 @@ app.put('/lab4/:node/storage/:key', function(req, res){
 
 app.del('/lab4/:node/storage/:key', function(req, res){
 	//res.send("DELETE to storage key: " + req.params.key[0])
-	console.log("Post: " + req.params.node[0] + " : " + req.body.newVal)
+	console.log("Delete: " + req.params.node[0] + " : " + req.params.key[0])
 	//res.render('lab4del', { title: "Delete done", node_addr: req.params.node[0], key: req.params.key[0], socket_action: 3 })
 	var msg = {
-		type: "message",
-	    text: "test sending DELETE",
-	    id:   1,
-	    date: Date.now()
+			Action: 4,
+			Key: req.params.key[0].toString(),
+		    date: Date.now()
 	}
 	try {
 		var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
@@ -157,9 +155,8 @@ app.get('/lab4/:node/storage/:key', function(req, res){
 	//res.send('ip: ' + req.params.node[0])
 	//res.render('lab4get', { title: "Get" , node_addr: req.params.node[0], key: req.params.key[0] });//, layout: false });
 	var msg = {
-			type: "message",
-		    text: "test sending GET: " + req.params.key[0],
-		    id:   1,
+			Action: 1,
+			Key: req.params.key[0].toString(),
 		    date: Date.now()
 	}
 	try {
