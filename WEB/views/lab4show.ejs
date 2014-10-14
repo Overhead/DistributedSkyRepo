@@ -2,45 +2,6 @@
 
 <script type="text/javascript">
 
-var wSocket;
-
-$( document ).ready(function() {
-    var addr = document.getElementById('node_ip').innerHTML
-    var action = document.getElementById('socket_action').innerHTML
-    console.log("Action: " + action)
-      
-   	wSocket = new WebSocket("ws://" + addr + "/node");
-   		
-   	wSocket.onmessage = function (event) {
-	  console.log(event.data);
-	  NodeResponse(event)
-	}
-	
-	if(typeof action != 'undefined') {
-		wSocket.onopen = function (event) {
-			var msg;
-			switch(parseInt(action)) {
-			    case 1: //POST
-			    	console.log("Post msg")
-			    	var newKey = document.getElementById('newVal').innerHTML
-			    	msg = {
-					    type: "message",
-					    text: "test sending POST: " + newKey,
-					    id:   1,
-					    date: Date.now()
-				    };
-					wSocket.send(JSON.stringify(msg));
-			    	break;
-			}
-		}	
-	}
-});
-
-function NodeResponse(event) {
-	var msg = JSON.parse(event.data);
-	document.getElementById('resultfield').innerHTML = msg.text
-}
-
 function DoGet(addr) {
 	var key = document.getElementById('getInputKey').value
 	console.log("DOGET -> Addr:" + addr + " Key: " + key)
@@ -60,8 +21,6 @@ function DoUpdate(addr) {
 	});
 }
 
-
-
 function DoDelete(addr) {
 	var key = document.getElementById('deleteInputKey').value
 	$.ajax({
@@ -77,22 +36,10 @@ function DoDelete(addr) {
 
 <html>
     <body>
-    <p id="node_ip" class="hidden"><%= node_addr %></p>
-    
-    <p id="socket_action" class="hidden">
-	    <% if( typeof socket_action != 'undefined' ){ %>
-	    	<%= socket_action %>
-		<%}%>
-	</p>
-	
-	<p id="newVal" class="hidden">
-	    <% if( typeof newVal != 'undefined' ){ %>
-	    	<%= newVal %>
-		<%}%>
-	</p>
+   		<p id="node_ip" class="hidden"><%= node_addr %></p>
 	    
         <article class="center-block">  
-			<h1> Connected to node <%= node_addr %> </h1>
+			<h1> Do actions against Node: <%= node_addr %> </h1>
 			</br>
 		    
 			<ul class="nav nav-tabs" role="tablist">
@@ -140,8 +87,6 @@ function DoDelete(addr) {
 		  	  </div>
 			</div>
 			</br></br></br>
-			<h4> Result </h4>
-			<textarea id="resultfield" class="form-control" rows="3"></textarea>
 		</article>
      </body>
 </html>
