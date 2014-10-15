@@ -10,7 +10,8 @@ var express = require('express')
 
 var app = module.exports = express.createServer();
 var stringify = require('json-stable-stringify');
-var WebSocket = require('ws')
+//var WebSocket = require('ws')
+var WebSocketClient = require('websocket').client;
 
 //Modify param function to take in regex
 app.param(function(name, fn){
@@ -72,16 +73,13 @@ app.get('/lab4/:node/storage', function(req, res) {
 });
 
 app.post('/lab4/:node/storage', function(req, res){
-	//res.send("POST to storage: " + req.body.newVal)
-	console.log("Post: " + req.params.node[0] + " : " + req.body.newVal)
-	//res.render('lab4show', { title: "Post done", node_addr: req.params.node[0], newVal: req.body.newVal, socket_action: 1 })
 	var msg = {
 			Action: 3,
 			Key: req.body.newVal.toString(),
 		    date: Date.now()
 	}
 	try {
-		var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
+		/*var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
 		ws.on('open', function() {
 		    ws.send(stringify(msg));
 		});
@@ -91,16 +89,39 @@ app.post('/lab4/:node/storage', function(req, res){
 		});
 		ws.on('error', function(error) {
 			res.send(error)
-		})
+		})*/
+		var client = new WebSocketClient();
+
+		client.on('connectFailed', function(error) {
+		    console.log('Connect Error: ' + error.toString());
+		    res.send(error.toString())
+		});
+		
+		client.on('connect', function(connection) {
+		    connection.on('error', function(error) {
+		        console.log("Connection Error: " + error.toString());
+		        res.send(error.toString())
+		    });
+		    connection.on('close', function() {
+		        console.log('echo-protocol Connection Closed');
+		    });
+		    connection.on('message', function(message) {
+		        if (message.type === 'utf8') {
+		            console.log("Received: '" + message.utf8Data + "'");
+		            res.send(message.utf8Data)
+		        }
+		    });
+		    console.log('WebSocket client connected');
+	    	connection.sendUTF(stringify(msg).toString());
+		});
+		console.log("Connect to: ws://" + req.params.node[0] + "/node")
+		client.connect('ws://' + req.params.node[0] + '/node', "", "http://" + req.params.node[0]);
 	} catch(e) {
 		console.log('Error: %s', e);
 	}
 });
 
 app.put('/lab4/:node/storage/:key', function(req, res){
-	//res.send("UPDATE to storage key: " + req.body.newVal)
-	console.log("Put: " + req.params.node[0] + " : " + req.body.newVal)
-	//res.render('lab4put', { title: "Put done", node_addr: req.params.node[0], key: req.params.key[0], newVal: req.body.newVal, socket_action: 2 })
 	var msg = {
 			Action: 2,
 			Key: req.params.key[0].toString(),
@@ -108,7 +129,7 @@ app.put('/lab4/:node/storage/:key', function(req, res){
 		    date: Date.now()
 	}
 	try {
-		var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
+		/*var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
 		ws.on('open', function() {
 		    ws.send(stringify(msg));
 		});
@@ -118,23 +139,46 @@ app.put('/lab4/:node/storage/:key', function(req, res){
 		});
 		ws.on('error', function(error) {
 			res.send(error)
-		})
+		})*/
+		var client = new WebSocketClient();
+
+		client.on('connectFailed', function(error) {
+		    console.log('Connect Error: ' + error.toString());
+		    res.send(error.toString())
+		});
+		
+		client.on('connect', function(connection) {
+		    connection.on('error', function(error) {
+		        console.log("Connection Error: " + error.toString());
+		        res.send(error.toString())
+		    });
+		    connection.on('close', function() {
+		        console.log('echo-protocol Connection Closed');
+		    });
+		    connection.on('message', function(message) {
+		        if (message.type === 'utf8') {
+		            console.log("Received: '" + message.utf8Data + "'");
+		            res.send(message.utf8Data)
+		        }
+		    });
+		    console.log('WebSocket client connected');
+	    	connection.sendUTF(stringify(msg).toString());
+		});
+		console.log("Connect to: ws://" + req.params.node[0] + "/node")
+		client.connect('ws://' + req.params.node[0] + '/node', "", "http://" + req.params.node[0]);
 	} catch(e) {
 		console.log('Error: %s', e);
 	}
 });
 
 app.del('/lab4/:node/storage/:key', function(req, res){
-	//res.send("DELETE to storage key: " + req.params.key[0])
-	console.log("Delete: " + req.params.node[0] + " : " + req.params.key[0])
-	//res.render('lab4del', { title: "Delete done", node_addr: req.params.node[0], key: req.params.key[0], socket_action: 3 })
 	var msg = {
 			Action: 4,
 			Key: req.params.key[0].toString(),
 		    date: Date.now()
 	}
 	try {
-		var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
+		/*var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
 		ws.on('open', function() {
 		    ws.send(stringify(msg));
 		});
@@ -144,23 +188,46 @@ app.del('/lab4/:node/storage/:key', function(req, res){
 		});
 		ws.on('error', function(error) {
 			res.send(error)
-		})
+		})*/
+		var client = new WebSocketClient();
+
+		client.on('connectFailed', function(error) {
+		    console.log('Connect Error: ' + error.toString());
+		    res.send(error.toString())
+		});
+		
+		client.on('connect', function(connection) {
+		    connection.on('error', function(error) {
+		        console.log("Connection Error: " + error.toString());
+		        res.send(error.toString())
+		    });
+		    connection.on('close', function() {
+		        console.log('echo-protocol Connection Closed');
+		    });
+		    connection.on('message', function(message) {
+		        if (message.type === 'utf8') {
+		            console.log("Received: '" + message.utf8Data + "'");
+		            res.send(message.utf8Data)
+		        }
+		    });
+		    console.log('WebSocket client connected');
+	    	connection.sendUTF(stringify(msg).toString());
+		});
+		console.log("Connect to: ws://" + req.params.node[0] + "/node")
+		client.connect('ws://' + req.params.node[0] + '/node', "", "http://" + req.params.node[0]);
 	} catch(e) {
 		console.log('Error: %s', e);
 	}
 });
 
 app.get('/lab4/:node/storage/:key', function(req, res){
-	//res.send(requests.DoNodeGet(req.params.node[0], req.params.key[0]));
-	//res.send('ip: ' + req.params.node[0])
-	//res.render('lab4get', { title: "Get" , node_addr: req.params.node[0], key: req.params.key[0] });//, layout: false });
 	var msg = {
 			Action: 1,
 			Key: req.params.key[0].toString(),
 		    date: Date.now()
 	}
 	try {
-		var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
+		/*var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
 		ws.on('open', function() {
 		    ws.send(stringify(msg));
 		});
@@ -170,7 +237,33 @@ app.get('/lab4/:node/storage/:key', function(req, res){
 		});
 		ws.on('error', function(error) {
 			res.send(error)
-		})
+		})*/
+		var client = new WebSocketClient();
+
+		client.on('connectFailed', function(error) {
+		    console.log('Connect Error: ' + error.toString());
+		    res.send(error.toString())
+		});
+		
+		client.on('connect', function(connection) {
+		    connection.on('error', function(error) {
+		        console.log("Connection Error: " + error.toString());
+		        res.send(error.toString())
+		    });
+		    connection.on('close', function() {
+		        console.log('echo-protocol Connection Closed');
+		    });
+		    connection.on('message', function(message) {
+		        if (message.type === 'utf8') {
+		            console.log("Received: '" + message.utf8Data + "'");
+		            res.send(message.utf8Data)
+		        }
+		    });
+		    console.log('WebSocket client connected');
+	    	connection.sendUTF(stringify(msg).toString());
+		});
+		console.log("Connect to: ws://" + req.params.node[0] + "/node")
+		client.connect('ws://' + req.params.node[0] + '/node', "", "http://" + req.params.node[0]);		
 	} catch(e) {
 		console.log('Error: %s', e);
 	}
