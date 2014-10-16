@@ -1,6 +1,6 @@
 <script type="text/javascript">
 
-function ConnectToNode() {
+function ConnectToMachine() {
 	var addr = document.getElementById('inputNodeAddress').value
 	console.log("Addr: " + addr)
 	window.location.href = "/manage/" + addr;
@@ -13,14 +13,14 @@ function ConnectToNode() {
         <article class="center-block">  
 			<h1><%= title %> </h1>
 				<div class="form-group">
-			    	<label for="inputNodeAddress">Node Address</label>
+			    	<label for="inputNodeAddress">Machine IP:PORT</label>
 			    	<div class="row">
 			  			<div class="col-lg-3">
-			   				<input type="text" class="form-control" id="inputNodeAddress" placeholder="Enter node-address">
+			   				<input type="text" class="form-control" id="inputNodeAddress" placeholder="Enter machine IP:PORT">
 			  			</div>
 			  		</div>
 		  		</div>
-				<button class="btn btn-large btn-primary" onclick="ConnectToNode()">Connect</button>
+				<button class="btn btn-large btn-primary" onclick="ConnectToMachine()">Connect</button>
 		</article>
 	</body>
 </html>

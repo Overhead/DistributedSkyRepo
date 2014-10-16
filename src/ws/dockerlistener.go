@@ -114,12 +114,11 @@ type ImageCollection struct {
 	Images []Image
 }
 
-func Test(input* ContainerArgs, output* string) error {
-	*output += fmt.Sprintf("test")
-	return nil
+func Test(input* ContainerArgs) string {
+	return fmt.Sprintf("test")
 }
 
-func CreateContainer(args* CreateContainerArgs, output* string) error {
+func CreateContainer(args* CreateContainerArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	config := docker.Config{Image: args.ImageName}
@@ -136,12 +135,11 @@ func CreateContainer(args* CreateContainerArgs, output* string) error {
 		rpcOutput.ReplyCode = CreateContainerCode
 	}
 	b, _ := json.Marshal(rpcOutput)
-	*output += fmt.Sprintf(string(b))
-	return nil
+	return fmt.Sprintf(string(b))
 
 }
 
-func StartContainer(args* ContainerArgs, output* string) error {
+func StartContainer(args* ContainerArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	err := client.StartContainer(args.ID, nil)
@@ -155,12 +153,11 @@ func StartContainer(args* ContainerArgs, output* string) error {
 		rpcOutput.ReplyCode = StartContainerCode
 	}
 	b, _ := json.Marshal(rpcOutput)
-	*output += fmt.Sprintf(string(b))
-	return nil
+	return fmt.Sprintf(string(b))
 	
 }
 
-func StopContainer(args* ContainerArgs, output* string) error {
+func StopContainer(args* ContainerArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	err := client.StopContainer(args.ID, 3)
@@ -174,11 +171,10 @@ func StopContainer(args* ContainerArgs, output* string) error {
 		rpcOutput.ReplyCode = StopContainerCode
 	}
 	b, _ := json.Marshal(rpcOutput)
-	*output += fmt.Sprintf(string(b))
-	return nil
+	return fmt.Sprintf(string(b))
 }
 
-func KillContainer(args* ContainerArgs, output* string) error {
+func KillContainer(args* ContainerArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	rpcOutput := RpcOutput{}
@@ -192,12 +188,11 @@ func KillContainer(args* ContainerArgs, output* string) error {
 		rpcOutput.ReplyCode = KillContainerCode
 	}
 	b, _ := json.Marshal(rpcOutput)
-	*output += fmt.Sprintf(string(b))
-	return nil
+	return fmt.Sprintf(string(b))
 }
 
 
-func RestartContainer(args* ContainerArgs, output* string) error {
+func RestartContainer(args* ContainerArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	rpcOutput := RpcOutput{}
@@ -211,11 +206,10 @@ func RestartContainer(args* ContainerArgs, output* string) error {
 		rpcOutput.ReplyCode = RestartContainerCode
 	}
 	b, _ := json.Marshal(rpcOutput)
-	*output += fmt.Sprintf(string(b))
-	return nil
+	return fmt.Sprintf(string(b))
 }
 
-func RemoveContainer(args* RemoveContainerArgs, output* string) error {
+func RemoveContainer(args* RemoveContainerArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	rpcOutput := RpcOutput{}
@@ -229,8 +223,7 @@ func RemoveContainer(args* RemoveContainerArgs, output* string) error {
 		rpcOutput.ReplyCode = RemoveContainerCode
 	}
 	b, _ := json.Marshal(rpcOutput)
-	*output += fmt.Sprintf(string(b))
-	return nil
+	return fmt.Sprintf(string(b))
 }
 
 
@@ -240,7 +233,7 @@ func RemoveContainer(args* RemoveContainerArgs, output* string) error {
 	Message string
 	Author string
 */
-func CommitContainer(args* ContainerCommitArgs, output* string) error {
+func CommitContainer(args* ContainerCommitArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	image, err := client.CommitContainer(docker.CommitContainerOptions{Container: args.ContainerID, 
@@ -253,17 +246,16 @@ func CommitContainer(args* ContainerCommitArgs, output* string) error {
 		rpcOutput.Content += fmt.Sprintf("ERROR: %s", err)
 		rpcOutput.ReplyCode = ErrorCode
 		b, _ := json.Marshal(rpcOutput)
-		*output += fmt.Sprintf(string(b))
+		return fmt.Sprintf(string(b))
 	} else {
 		rpcOutput.Content += fmt.Sprintf("Commited container, new Image ID is: %s", image.ID)
 		rpcOutput.ReplyCode = CommitContainerCode
 	}
 	b, _ := json.Marshal(rpcOutput)
-	*output += fmt.Sprintf(string(b))
-	return nil
+	return fmt.Sprintf(string(b))
 }
 
-func ListContainers(args* DockerListArgs, output* string) error {
+func ListContainers(args* DockerListArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	imgs, err := client.ListContainers(docker.ListContainersOptions{All: args.ShowAll})
@@ -272,7 +264,7 @@ func ListContainers(args* DockerListArgs, output* string) error {
 		rpcOutput.Content += fmt.Sprintf("ERROR: %s", err)
 		rpcOutput.ReplyCode = ErrorCode
 		b, _ := json.Marshal(rpcOutput)
-		*output += fmt.Sprintf(string(b))
+		return fmt.Sprintf(string(b))
 	} else {
 		
 		list := []Container{}
@@ -286,13 +278,13 @@ func ListContainers(args* DockerListArgs, output* string) error {
 		}
 		containerColl := ContainerCollection{ReplyCode: ListContainersCode, Containers: list}
 		b, _ := json.Marshal(containerColl)
-		*output += fmt.Sprintf(string(b))
+		return fmt.Sprintf(string(b))
 	}
 	
-	return nil
+	return ""
 }
 
-func PullImage(args* ImageArgs, output* string) error {
+func PullImage(args* ImageArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	rpcOutput := RpcOutput{}
@@ -306,11 +298,10 @@ func PullImage(args* ImageArgs, output* string) error {
 		rpcOutput.ReplyCode = PullImageCode
 	}
 	b, _ := json.Marshal(rpcOutput)
-	*output += fmt.Sprintf(string(b))
-	return nil
+	return fmt.Sprintf(string(b))
 }
 
-func PushImage(args* ImageArgs, output* string) error {
+func PushImage(args* ImageArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	rpcOutput := RpcOutput{}
@@ -325,11 +316,10 @@ func PushImage(args* ImageArgs, output* string) error {
 		rpcOutput.ReplyCode = PushImageCode
 	}
 	b, _ := json.Marshal(rpcOutput)
-	*output += fmt.Sprintf(string(b))
-	return nil
+	return fmt.Sprintf(string(b))
 }
 
-func RemoveImage(args* RemoveImageArgs, output* string) error {
+func RemoveImage(args* RemoveImageArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
 	client, _ := docker.NewClient(endpoint)
 	rpcOutput := RpcOutput{}
@@ -343,13 +333,12 @@ func RemoveImage(args* RemoveImageArgs, output* string) error {
 		rpcOutput.ReplyCode = RemoveImageCode
 	}
 	b, _ := json.Marshal(rpcOutput)
-	*output += fmt.Sprintf(string(b))
-	return nil
+	return fmt.Sprintf(string(b))
 }
 
 
 
-func ListImages(args* DockerListArgs, output* string) error {
+func ListImages(args* DockerListArgs) string {
 	endpoint := "unix:///var/run/docker.sock"
         client, _ := docker.NewClient(endpoint)
         imgs, err := client.ListImages(args.ShowAll)
@@ -358,7 +347,7 @@ func ListImages(args* DockerListArgs, output* string) error {
 		rpcOutput.Content += fmt.Sprintf("ERROR: %s", err)
 		rpcOutput.ReplyCode = ErrorCode
 		b, _ := json.Marshal(rpcOutput)
-		*output += fmt.Sprintf(string(b))
+		return fmt.Sprintf(string(b))
 	} else {
 		list := []Image{}
 		for _, img := range imgs {
@@ -372,34 +361,60 @@ func ListImages(args* DockerListArgs, output* string) error {
         	}
 		imageColl := ImageCollection{ReplyCode: ListImagesCode, Images: list}
 		b, _ := json.Marshal(imageColl)
-		*output += fmt.Sprintf(string(b))
+		return fmt.Sprintf(string(b))
 	}
-	return nil
+	return ""
 
 }
 
 type Msg struct {
 		Action int
+		Container_ID string
 		Date int64
 }
 
-func handleDockerAction(action int) {
 
-	switch(action) {
-		case 1: //List Images
+/*  
+    CreateContainerCode 	= 1
+    StartContainerCode      = 2
+    StopContainerCode     	= 3
+    KillContainerCode	= 4
+    RestartContainerCode    = 5
+    RemoveContainerCode	= 6
+    ListContainersCode      = 7
+    PullImageCode		= 8
+    RemoveImageCode		= 9
+    ListImagesCode		= 10
+    CommitContainerCode 	= 11
+    PushImageCode		= 12
+*/
+func handleDockerAction(msg* Msg) string {
+	var response string
+	switch(msg.Action) {
+		case 1: //Create container
 			break;
-		case 2: //List containers
+		case 2: //Start container
 			break;
-		case 3: //Create container
+		case 3: //Stop container
 			break;
-		case 4: //Start container
+		case 4: //Kill container
 			break;
-		case 5: //Stop container
+		case 5: //Restart container
 			break;
 		case 6: //Remove container
 			break;
+		case 7: //List containers
+			fmt.Println("Get container list\n")
+			var args = DockerListArgs{ShowAll: true}
+			response = ListContainers(&args)
+			break;
+		case 10: //List images
+			fmt.Println("Get image list\n")
+			var args = DockerListArgs{ShowAll: true}
+			response = ListImages(&args)
+			break;
 	}
-
+	return response
 }
 
 func echoHandler(ws *websocket.Conn) {
@@ -413,10 +428,10 @@ func echoHandler(ws *websocket.Conn) {
 	json.Unmarshal([]byte(msg[:n]), &res)
   
 	fmt.Println(res)
-	fmt.Println(res.Action)
-	fmt.Println(res.Date)
+	
+	response := handleDockerAction(&res)
 
-	m, err := ws.Write(msg[:n])
+	m, err := ws.Write([]byte(response))
 	if err != nil {
 		log.Fatal(err)
 	}

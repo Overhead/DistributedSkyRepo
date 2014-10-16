@@ -5,23 +5,33 @@ var wSocket;
 $( document ).ready(function() {
     var addr = document.getElementById('node_ip').innerHTML
       
-   	wSocket = new WebSocket("ws://" + addr + "/node");
+   	wSocket = new WebSocket("ws://" + addr + "/docker");
    		
    	wSocket.onmessage = function (event) {
 	  NodeResponse(event)
 	}
 	
 	wSocket.onopen = function (event) {
-		var msg = {
-			type: "message",
-		    text: "Get list of nodes",
-	   		id:   1,
-		    date: Date.now()
-	    };
-		wSocket.send(JSON.stringify(msg));
+		//ShowImages()
+		ShowContainers()
 	}
-
 });
+
+function ShowContainers() {   
+    var msg = {
+    	Action: 7,
+		Date: Date.now()
+    }
+    wSocket.send(JSON.stringify(msg));
+}
+
+function ShowImages() {
+	var msg = {
+    	Action: 10,
+		Date: Date.now()
+    }
+    wSocket.send(JSON.stringify(msg));
+}
 
 </script>
 
