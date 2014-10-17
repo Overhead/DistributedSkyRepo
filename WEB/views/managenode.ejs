@@ -37,7 +37,27 @@ function ShowImages() {
 
 <html>
     <body>
-    	<p id="node_ip" class="hidden"><%= node_addr %></p>
-    	<p id="result"> </p>
+		 <p id="node_ip" class="hidden"><%= node_addr %></p>
+    	 <h3 id="avail_cont_head"> Containers available: 0 </h3>
+		 <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#containers_div"> Toggle table</button>
+		 <button class="btn btn-primary" type="button" onclick="ShowContainers()">
+			Refresh <span class="glyphicon glyphicon-refresh"></span>
+		 </button>
+		 <div id="containers_div" class="collapse">
+			 <table class="table table-striped table-condensed" id="container_table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>ID</th>
+						<th>Image</th>
+						<th>Created</th>
+						<th>Status</th>
+						<th></th>
+					</tr>
+				</thead>
+				<tbody id="containers_body">
+				</tbody>
+			 </table>
+		 </div>
 	</body>
 </html>
