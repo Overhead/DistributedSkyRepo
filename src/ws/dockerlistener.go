@@ -370,6 +370,8 @@ func ListImages(args* DockerListArgs) string {
 type Msg struct {
 		Action int
 		Container_ID string
+		ContainerName string
+		ImageID string
 		Date int64
 }
 
@@ -392,6 +394,8 @@ func handleDockerAction(msg* Msg) string {
 	var response string
 	switch(msg.Action) {
 		case 1: //Create container
+			var args = CreateContainerArgs{ContainerName: msg.ContainerName, ImageName: msg.ImageID}
+			response = CreateContainer(&args)
 			break;
 		case 2: //Start container
 			break;
@@ -418,24 +422,27 @@ func handleDockerAction(msg* Msg) string {
 }
 
 func echoHandler(ws *websocket.Conn) {
-	msg := make([]byte, 512)
-	n, err := ws.Read(msg)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Receive: %s\n", msg[:n])
-	var res Msg
-	json.Unmarshal([]byte(msg[:n]), &res)
-  
-	fmt.Println(res)
+	var err error
+	var msg Msg	
+	for {
+		dec := json.NewDecoder(ws)
+		err = dec.Decode(&msg)
+		if err != nil {
+			log.Fatal(err)
+			break
+		}
+		fmt.Printf("Receive: %s\n", &msg)
+		
+		fmt.Println(&msg)
 	
-	response := handleDockerAction(&res)
+		response := handleDockerAction(&msg)
 
-	m, err := ws.Write([]byte(response))
-	if err != nil {
-		log.Fatal(err)
+		_, err := ws.Write([]byte(response))
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Printf("Send: %s\n", response)
 	}
-	fmt.Printf("Send: %s\n", msg[:m])
 }
 
 func main() {

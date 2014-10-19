@@ -13,30 +13,30 @@
     CommitContainerCode 	= 11
     PushImageCode		= 12 */
 var NodeResponse = function(event) {
-	node = this;
 	var msg = JSON.parse(event.data);
 	console.log(msg)
 	
 	switch(msg.ReplyCode) {
-	case 1:
-		break;
-	case 2:
-		break;
-	case 3:
-		break;
-	case 4: 
-		break;
-	case 5:
-		break;
-	case 6:
-		break;
-	case 7: //List containers
-		console.log(msg.Containers[0])
-		CreateContainerList(msg, node)
-		break;
-	case 10:
-		console.log(msg.Images[0])
-		break;
+		case 1:
+			console.log(msg)
+			ShowContainers()
+			break;
+		case 2:
+			break;
+		case 3:
+			break;
+		case 4: 
+			break;
+		case 5:
+			break;
+		case 6:
+			break;
+		case 7: //List containers
+			CreateContainerList(msg)
+			break;
+		case 10:
+			console.log(msg.Images[0])
+			break;
 	}
 }
 

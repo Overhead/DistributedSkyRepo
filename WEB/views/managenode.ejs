@@ -9,12 +9,17 @@ $( document ).ready(function() {
    		
    	wSocket.onmessage = function (event) {
 	  NodeResponse(event)
-	}
+	};
 	
 	wSocket.onopen = function (event) {
 		//ShowImages()
 		ShowContainers()
-	}
+	};
+	
+	wSocket.addEventListener("close", function(event) {
+	  console.log("Closing websocket")
+	});
+	
 });
 
 function ShowContainers() {   
@@ -33,11 +38,40 @@ function ShowImages() {
     wSocket.send(JSON.stringify(msg));
 }
 
+function CreateCont() {
+	console.log("Create")
+	var contname = $('#container-name-field');
+	var imgid = $('#image-id-field');
+	
+	if(contname == "" || imgid == "") {
+		alert("Fill in both Name and ID")
+	} else {
+		var msg = {
+			Action: 1,
+			ContainerName: contname.val(),
+			ImageID: imgid.val(),
+			Date: Date.now()
+		}
+		wSocket.send(JSON.stringify(msg));
+		contname.val("");
+		imgid.val("");
+	}
+}
+
 </script>
 
 <html>
     <body>
 		 <p id="node_ip" class="hidden"><%= node_addr %></p>
+		 <div class="input-group">
+		  <input id="container-name-field" type="text" class="form-control" placeholder="Container name">
+		  <input id="image-id-field" type="text" class="form-control" placeholder="Image ID">
+		</div>
+		 <button class="btn btn-primary" type="button" onclick="CreateCont()">
+			Create new node
+		 </button>
+		 
+		 
     	 <h3 id="avail_cont_head"> Containers available: 0 </h3>
 		 <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#containers_div"> Toggle table</button>
 		 <button class="btn btn-primary" type="button" onclick="ShowContainers()">
