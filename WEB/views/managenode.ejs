@@ -58,11 +58,109 @@ function CreateCont() {
 	}
 }
 
+function StartContainer(container_id) {
+		var msg = {
+			Action: 2,
+			Container_ID: container_id,
+			Date: Date.now()
+		}
+		wSocket.send(JSON.stringify(msg));
+}
+
+function StopContainer(container_id) {
+		var msg = {
+			Action: 3,
+			Container_ID: container_id,
+			Date: Date.now()
+		}
+		wSocket.send(JSON.stringify(msg));
+}
+
+function KillContainer(container_id) {
+		var msg = {
+			Action: 4,
+			Container_ID: container_id,
+			Date: Date.now()
+		}
+		wSocket.send(JSON.stringify(msg));
+}
+
+function RemoveContainer(container_id) {
+		var msg = {
+			Action: 6,
+			Container_ID: container_id,
+			Date: Date.now()
+		}
+		wSocket.send(JSON.stringify(msg));
+}
+
+function ConnectNodeToRing(container_id){
+		var msg = {
+			Action: 11,
+			Container_ID: container_id,
+			Date: Date.now()
+		}
+		wSocket.send(JSON.stringify(msg));
+}
+
+function GetSkyRing() {
+	var nodeaddr = $('#sky-node-addr');
+	
+	if(nodeaddr.val() == "") {
+		alert("Please fill in a node address in order to get ring");
+	} else {
+		var nodeSocket = new WebSocket("ws://" + nodeaddr.val() + "/node");
+	   		
+	   	nodeSocket.onmessage = function (event) {
+		  CreateSkyRingList(event)
+		};
+		
+		nodeSocket.onopen = function (event) {
+			var msg = {
+				Action: 3,
+			}
+			nodeSocket.send(JSON.stringify(msg));
+		};
+		
+		nodeSocket.addEventListener("close", function(event) {
+		  console.log("Closing node-websocket")
+		});
+		
+		nodeSocket.onerror = function(event) {
+			alert("Error on node-websocket: ")
+		}
+	}
+	
+}
+
 </script>
 
 <html>
     <body>
 		 <p id="node_ip" class="hidden"><%= node_addr %></p>
+		 <h3 id="sky-ring-title">Nodes in Sky-ring: 0</h3>
+		 <div class="input-group">
+		  <input id="sky-node-addr" type="text" class="form-control" placeholder="Sky-node IP:PORT">
+		 </div>
+		 <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#sky-ring-div"> Toggle table</button>
+		 <button class="btn btn-primary" type="button" onclick="GetSkyRing()">
+			Get ring <span class="glyphicon glyphicon-refresh"></span>
+		 </button>
+		 <div id="sky-ring-div" class="collapse">
+			 <table class="table table-striped table-condensed" id="sky-ring-table">
+				<thead>
+					<tr>
+						<th>#</th>
+						<th>ID</th>
+						<th>IP</th>
+					</tr>
+				</thead>
+				<tbody id="sky-ring-body">
+				</tbody>
+			 </table>
+		 </div>
+		 </br>
+		 </br>
 		 <div class="input-group">
 		  <input id="container-name-field" type="text" class="form-control" placeholder="Container name">
 		  <input id="image-id-field" type="text" class="form-control" placeholder="Image ID">
@@ -70,8 +168,8 @@ function CreateCont() {
 		 <button class="btn btn-primary" type="button" onclick="CreateCont()">
 			Create new node
 		 </button>
-		 
-		 
+		 </br>
+		
     	 <h3 id="avail_cont_head"> Containers available: 0 </h3>
 		 <button type="button" class="btn btn-info" data-toggle="collapse" data-target="#containers_div"> Toggle table</button>
 		 <button class="btn btn-primary" type="button" onclick="ShowContainers()">

@@ -13,6 +13,7 @@
     CommitContainerCode 	= 11
     PushImageCode		= 12 */
 var NodeResponse = function(event) {
+	//console.log(event.data)
 	var msg = JSON.parse(event.data);
 	console.log(msg)
 	
@@ -20,16 +21,22 @@ var NodeResponse = function(event) {
 		case 1:
 			console.log(msg)
 			ShowContainers()
+			StartContainer(msg.ID)
+			ConnectNodeToRing(msg.ID)
 			break;
 		case 2:
+			ShowContainers()
 			break;
 		case 3:
+			ShowContainers()
 			break;
 		case 4: 
+			ShowContainers()
 			break;
 		case 5:
 			break;
 		case 6:
+			ShowContainers()
 			break;
 		case 7: //List containers
 			CreateContainerList(msg)
@@ -37,20 +44,62 @@ var NodeResponse = function(event) {
 		case 10:
 			console.log(msg.Images[0])
 			break;
+		case 11:
+			console.log("IP: " + msg.NetworkSettings.IP)
+			break;
 	}
 }
 
-function CreateContainerList(json, node){
+function CreateSkyRingList(event) {
+
+	var json = JSON.parse(event.data);
+	var table = document.getElementById("sky-ring-table");
+	$('#sky-ring-body').empty()
+	for(var j=0; j < json.ring.length; j++) {
+		populateSkyringList(j+1, json.ring, json, table);
+	}
+	
+}
+
+function populateSkyringList(nr, ringnode, json, table){
+	var row = document.createElement("tr");
+    var cell1 = document.createElement("td");
+    var cell2 = document.createElement("td");
+    var cell3 = document.createElement("td");
+    
+    var nrtab = document.createTextNode(nr);
+    
+    var idTab = document.createTextNode(ringnode.ID.substring(0, 10)+"...");
+    var idCell = document.createElement("p");
+    idCell.setAttribute('data-toggle', 'tooltip')
+    idCell.setAttribute('data-placement', 'top')
+    idCell.setAttribute('title', ringnode.ID)
+    idCell.appendChild(idTab)
+    
+    var nameTab = document.createTextNode(ringnode.IP);
+    
+    cell1.appendChild(nrtab);
+    cell2.appendChild(idCell);
+    cell3.appendChild(nameTab);
+    row.appendChild(cell1);
+    row.appendChild(cell2);
+    row.appendChild(cell3);
+    
+    table.tBodies.item("sky-ring-body").appendChild(row);
+    
+}
+
+function CreateContainerList(json){
 	var table = document.getElementById("container_table");
 	setContainerHeaderText(json.Containers.length);
 	$("#containers_body").empty();
 	for (var i = 0; i < json.Containers.length; i++)
     {
-		populateContainerList(i+1, json.Containers[i], node, json, table);
+		populateContainerList(i+1, json.Containers[i], json, table);
     }
 }
 
-function populateContainerList(nr, container, node, json, table){
+function populateContainerList(nr, container, json, table){
 	var row = document.createElement("tr");
     var cell1 = document.createElement("td");
     var cell2 = document.createElement("td");
@@ -81,8 +130,7 @@ function populateContainerList(nr, container, node, json, table){
 	    startButton.appendChild(buttonText);
 	    startButton.onclick = function()
 	    {
-	        var args = new ContainerArgs();
-	        args.ID = container.ID;
+	    	StartContainer(container.ID)
 	    }
 	    cell6.appendChild(startButton);
     } else {
@@ -92,8 +140,7 @@ function populateContainerList(nr, container, node, json, table){
 	    stopButton.appendChild(buttonText);
 	    stopButton.onclick = function()
 	    {
-	        var args = new ContainerArgs();
-	        args.ID = container.ID;
+	        StopContainer(container.ID)
 	    }  
 	    
 	    var killButton = document.createElement("Button");
@@ -102,8 +149,7 @@ function populateContainerList(nr, container, node, json, table){
 	    killButton.appendChild(buttonText);
 	    killButton.onclick = function()
 	    {
-	        var args = new ContainerArgs();
-	        args.ID = container.ID;          
+	        KillContainer(container.ID)        
 	    }
 	    
 	    cell6.appendChild(stopButton);
@@ -117,10 +163,7 @@ function populateContainerList(nr, container, node, json, table){
     deleteButton.onclick = function()
     {
     	if (confirm("Do you really want to delete " + container.ID + "?") == true) {
-	        var args = new RemoveContainerArgs();
-	        args.ID = container.ID;
-	        args.RemoveVolumes = true;
-	        args.Force = true;
+    		DeleteContainer(container.ID)
 	        table.deleteRow(nr);
     	}
     }       
@@ -143,4 +186,8 @@ function populateContainerList(nr, container, node, json, table){
 
 function setContainerHeaderText(count){
 	$("#avail_cont_head").text("Containers available: "+ count);
+}
+
+function setRingHeaderText(count) {
+	$("#sky-ring-title").text("Nodes in Sky-ring: " + count);
 }
