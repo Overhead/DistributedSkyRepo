@@ -38,6 +38,22 @@ function ShowImages() {
     wSocket.send(JSON.stringify(msg));
 }
 
+function GetSkyRing() {
+	var nodeaddr = $('#sky-node-addr');
+	
+	if(nodeaddr.val() == "") {
+		alert("Please fill in a node address in order to get ring");
+	} else {
+		$.ajax({
+		   url: "/manage/"+nodeaddr.val()+"/ring/",
+		   type: "GET",
+		   success: function(data) {
+		     CreateSkyRingList(data)
+		   }
+		});
+	}
+}
+
 function CreateCont() {
 	console.log("Create")
 	var contname = $('#container-name-field');
@@ -103,7 +119,7 @@ function ConnectNodeToRing(container_id){
 		wSocket.send(JSON.stringify(msg));
 }
 
-function GetSkyRing() {
+/*function GetSkyRing() { //Future working solution
 	var nodeaddr = $('#sky-node-addr');
 	
 	if(nodeaddr.val() == "") {
@@ -131,7 +147,7 @@ function GetSkyRing() {
 		}
 	}
 	
-}
+}*/
 
 </script>
 
@@ -156,6 +172,7 @@ function GetSkyRing() {
 					</tr>
 				</thead>
 				<tbody id="sky-ring-body">
+					<td id="no-ring-text" colspan="3" style="text-align: center"class="alert alert-warning" role="alert">No ring</td>
 				</tbody>
 			 </table>
 		 </div>

@@ -50,15 +50,24 @@ var NodeResponse = function(event) {
 	}
 }
 
-function CreateSkyRingList(event) {
-
-	var json = JSON.parse(event.data);
-	var table = document.getElementById("sky-ring-table");
-	$('#sky-ring-body').empty()
-	for(var j=0; j < json.Nodes.length; j++) {
-		populateSkyringList(j+1, json.Nodes[j], json, table);
-	}
-	
+function CreateSkyRingList(data) {
+	try {
+		var json = JSON.parse(data);
+		var table = document.getElementById("sky-ring-table");
+		$('#sky-ring-body').empty()
+		
+		if(json.Nodes.length == 0) {
+			$('#no-ring-text').show()
+		} else {
+			$('#no-ring-text').hide()
+			for(var j=0; j < json.Nodes.length; j++) {
+				populateSkyringList(j+1, json.Nodes[j], json, table);
+			}
+		}
+	}catch(e) {
+		console.log(e)
+		$('#no-ring-text').show()
+	}	
 }
 
 function populateSkyringList(nr, ringnode, json, table){

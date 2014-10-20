@@ -269,6 +269,42 @@ app.get('/lab4/:node/storage/:key', function(req, res){
 	}
 });
 
+app.get('/manage/:node/ring', function(req, res){
+	var msg = {
+			Action: 5,
+		    date: Date.now()
+	}
+	try {
+		var client = new WebSocketClient();
+
+		client.on('connectFailed', function(error) {
+		    console.log('Connect Error: ' + error.toString());
+		    res.send(error.toString())
+		});
+		
+		client.on('connect', function(connection) {
+		    connection.on('error', function(error) {
+		        console.log("Connection Error: " + error.toString());
+		        res.send(error.toString())
+		    });
+		    connection.on('close', function() {
+		        console.log('Connection Closed');
+		    });
+		    connection.on('message', function(message) {
+		        if (message.type === 'utf8') {
+		            console.log("Received: '" + message.utf8Data + "'");
+		            res.send(message.utf8Data)
+		        }
+		    });
+		    console.log('WebSocket client connected');
+	    	connection.sendUTF(stringify(msg).toString());
+		});
+		console.log("Connect to: ws://" + req.params.node[0] + "/node")
+		client.connect('ws://' + req.params.node[0] + '/node', "", "http://" + req.params.node[0]);		
+	} catch(e) {
+		console.log('Error: %s', e);
+	}
+});
 
 app.get('/manage', manage.index);
 

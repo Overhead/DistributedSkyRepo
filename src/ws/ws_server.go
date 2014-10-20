@@ -16,8 +16,13 @@ type Msg struct {
 }
 
 type DhtNode struct {
-	Ip string
 	Id string
+	Addr *Addr
+}
+
+type Addr struct {
+	IP string
+	Port int
 }
 
 type DhtNodes struct {
@@ -34,8 +39,10 @@ func echoHandler(ws *websocket.Conn) {
 	var res Msg
 	json.Unmarshal([]byte(msg[:n]), &res)
 
-	node1 := DhtNode{Ip: "123", Id: "15123"}
-	node2 := DhtNode{Ip: "1512", Id: "qssad"}
+	ip1 := Addr{IP: "192.", Port: 2020}
+	ip2 := Addr{IP: "193.", Port: 2021}
+	node1 := DhtNode{Id: "15123", Addr: &ip1}
+	node2 := DhtNode{Id: "qssad", Addr: &ip2}
 	list := []*DhtNode{}
 
 	list  = append(list, &node1)
