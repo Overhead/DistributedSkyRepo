@@ -55,8 +55,8 @@ function CreateSkyRingList(event) {
 	var json = JSON.parse(event.data);
 	var table = document.getElementById("sky-ring-table");
 	$('#sky-ring-body').empty()
-	for(var j=0; j < json.ring.length; j++) {
-		populateSkyringList(j+1, json.ring, json, table);
+	for(var j=0; j < json.Nodes.length; j++) {
+		populateSkyringList(j+1, json.Nodes[j], json, table);
 	}
 	
 }
@@ -69,14 +69,14 @@ function populateSkyringList(nr, ringnode, json, table){
     
     var nrtab = document.createTextNode(nr);
     
-    var idTab = document.createTextNode(ringnode.ID.substring(0, 10)+"...");
+    var idTab = document.createTextNode(ringnode.Id.substring(0, 10)+"...");
     var idCell = document.createElement("p");
     idCell.setAttribute('data-toggle', 'tooltip')
     idCell.setAttribute('data-placement', 'top')
-    idCell.setAttribute('title', ringnode.ID)
+    idCell.setAttribute('title', ringnode.Id)
     idCell.appendChild(idTab)
     
-    var nameTab = document.createTextNode(ringnode.IP);
+    var nameTab = document.createTextNode(ringnode.Addr.IP);
     
     cell1.appendChild(nrtab);
     cell2.appendChild(idCell);

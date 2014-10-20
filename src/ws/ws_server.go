@@ -15,6 +15,15 @@ type Msg struct {
 		Date int64
 }
 
+type DhtNode struct {
+	Ip string
+	Id string
+}
+
+type DhtNodes struct {
+	Nodes []*DhtNode
+}
+
 func echoHandler(ws *websocket.Conn) {
 	msg := make([]byte, 512)
 	n, err := ws.Read(msg)
@@ -24,13 +33,17 @@ func echoHandler(ws *websocket.Conn) {
 	fmt.Printf("Receive: %s\n", msg[:n])
 	var res Msg
 	json.Unmarshal([]byte(msg[:n]), &res)
-  
-	fmt.Println(res)
-	fmt.Println(res.Action)
-	fmt.Println(res.Key)
-	fmt.Println(res.Date)
 
-	m, err := ws.Write(msg[:n])
+	node1 := DhtNode{Ip: "123", Id: "15123"}
+	node2 := DhtNode{Ip: "1512", Id: "qssad"}
+	list := []*DhtNode{}
+
+	list  = append(list, &node1)
+	list  = append(list, &node2)
+
+	nodes := DhtNodes{Nodes: list }
+	response, _ := json.Marshal(nodes)	
+	m, err := ws.Write([]byte(string(response)))
 	if err != nil {
 		log.Fatal(err)
 	}
