@@ -58,9 +58,10 @@ function CreateCont() {
 	console.log("Create")
 	var contname = $('#container-name-field');
 	var imgid = $('#image-id-field');
+	var joinaddr = $('#node-join-addr');
 	
-	if(contname == "" || imgid == "") {
-		alert("Fill in both Name and ID")
+	if(contname.val() == "" || imgid.val() == "" || joinaddr.val() == "") {
+		alert("Fill in Name, ID and JoinAddress")
 	} else {
 		var msg = {
 			Action: 1,
@@ -111,9 +112,12 @@ function RemoveContainer(container_id) {
 }
 
 function ConnectNodeToRing(container_id){
+		var joinaddr = $('#node-join-addr').val()
+		
 		var msg = {
 			Action: 11,
 			Container_ID: container_id,
+			JoinAddr: joinaddr,
 			Date: Date.now()
 		}
 		wSocket.send(JSON.stringify(msg));
@@ -179,6 +183,7 @@ function ConnectNodeToRing(container_id){
 		 </br>
 		 </br>
 		 <div class="input-group">
+		  <input id="node-join-addr" type="text" class="form-control" placeholder="Node to join -> IP:PORT">
 		  <input id="container-name-field" type="text" class="form-control" placeholder="Container name">
 		  <input id="image-id-field" type="text" class="form-control" placeholder="Image ID">
 		</div>

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"encoding/json"
 	"log"
+	"os"
+	"net"
 	"net/http"
 	"code.google.com/p/go.net/websocket"
 	"github.com/fsouza/go-dockerclient"
@@ -77,13 +79,7 @@ type RpcOutput struct {
 	ReplyCode int
 }
 
-type RpcOutputCreateCont struct {
-	Content string
-	ID string
-	ReplyCode int
-}
-
-type RpcOutputCreateContainer struct {
+type NewContainerOutput struct {
 	Content string
 	ID string
 	ReplyCode int
@@ -129,7 +125,7 @@ func CreateContainer(args* CreateContainerArgs) string {
 	config := docker.Config{Image: args.ImageName}
 	createArgs := docker.CreateContainerOptions{Name: args.ContainerName, Config: &config}	
 	container, err := client.CreateContainer(createArgs)
-	rpcOutput := RpcOutputCreateContainer{}
+	rpcOutput := NewContainerOutput{}
 	rpcOutput.Content = ""
 	if err != nil {
 		rpcOutput.Content += fmt.Sprintf("ERROR: %s", err)
@@ -308,14 +304,45 @@ func InspectContainer(id string) (*docker.Container, error) {
 	}
 }
 
+func SendJoinMsg(from *net.UDPAddr, to *net.UDPAddr) {
+	msg := JoinMsg{Idx: 1, Key: "", Src: from, Dst: to}
+	
+	con, err := net.DialUDP("udp", nil, from)
+	CheckError(err)
+	defer con.Close()
+
+	buffer, err := json.Marshal(msg)
+	CheckError(err)
+
+	_,err = con.Write(buffer)
+	CheckError(err)
+}
+
+func CheckError(err error) {
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Fatal error ", err.Error())
+		os.Exit(1)
+	}
+
+
+}
+
 type Msg struct {
 		Action int
 		Container_ID string
 		ContainerName string
 		ImageID string
+		JoinAddr string
 		Date int64
 }
+	
+type JoinMsg struct {
+	Idx	int
+	Key string
+	Src *net.UDPAddr
+	Dst *net.UDPAddr
 
+}
 
 /*  
     CreateContainerCode 	= 1
@@ -368,7 +395,15 @@ func handleDockerAction(msg* Msg) string {
 				fmt.Println(err)			
 			} else {
 				fmt.Println(container)
-				data := InspectedContainer{ReplyCode: 11, Container: container}	
+				newCont := container.NetworkSettings.IPAddress + ":1075"
+				newContAddr, err := net.ResolveUDPAddr("udp", newCont)
+				CheckError(err)
+				joinContAddr, err := net.ResolveUDPAddr("udp", msg.JoinAddr)
+				CheckError(err)
+				SendJoinMsg(joinContAddr,newContAddr)
+
+				//data := InspectedContainer{ReplyCode: 11, Container: container}	
+				data := RpcOutput{ReplyCode: 11, Content: "Join msg sent to: " + msg.JoinAddr}
 				b, _ := json.Marshal(data)
 				return fmt.Sprintf(string(b))	
 			}
@@ -403,7 +438,7 @@ func echoHandler(ws *websocket.Conn) {
 
 func main() {
 	http.Handle("/docker", websocket.Handler(echoHandler))
-	err := http.ListenAndServe(":8080", nil)
+	err := http.ListenAndServe(":8081", nil)
 	if err != nil {
 		panic("ListenAndServe: " + err.Error())
 	}
