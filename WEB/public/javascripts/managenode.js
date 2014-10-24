@@ -45,7 +45,7 @@ var NodeResponse = function(event) {
 			console.log(msg.Images[0])
 			break;
 		case 11:
-			console.log("IP: " + msg.NetworkSettings.IP)
+			console.log("Response: " + msg.Content)
 			break;
 	}
 }
