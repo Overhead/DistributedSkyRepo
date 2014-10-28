@@ -1,5 +1,10 @@
-src/github.com/*
 *.*~
 *~
-src/*/*.*~
-src/*/*~
+Old/src/*/*.*~
+Old/src/*/*~
+Old/src/github.com/*
+Old/src/code.google.com/*
+Labs/src/*/*.*~
+Labs/src/*/*~
+Labs/src/github.com/*
+Labs/src/code.google.com/*

@@ -10,7 +10,6 @@ var express = require('express')
 
 var app = module.exports = express.createServer();
 var stringify = require('json-stable-stringify');
-//var WebSocket = require('ws')
 var WebSocketClient = require('websocket').client;
 
 //Modify param function to take in regex
@@ -79,17 +78,6 @@ app.post('/lab4/:node/storage', function(req, res){
 		    date: Date.now()
 	}
 	try {
-		/*var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
-		ws.on('open', function() {
-		    ws.send(stringify(msg));
-		});
-		ws.on('message', function(message) {
-		    console.log('received: %s', message);
-		    res.send(message)
-		});
-		ws.on('error', function(error) {
-			res.send(error)
-		})*/
 		var client = new WebSocketClient();
 
 		client.on('connectFailed', function(error) {
@@ -129,17 +117,6 @@ app.put('/lab4/:node/storage/:key', function(req, res){
 		    date: Date.now()
 	}
 	try {
-		/*var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
-		ws.on('open', function() {
-		    ws.send(stringify(msg));
-		});
-		ws.on('message', function(message) {
-		    console.log('received: %s', message);
-		    res.send(message)
-		});
-		ws.on('error', function(error) {
-			res.send(error)
-		})*/
 		var client = new WebSocketClient();
 
 		client.on('connectFailed', function(error) {
@@ -178,17 +155,6 @@ app.del('/lab4/:node/storage/:key', function(req, res){
 		    date: Date.now()
 	}
 	try {
-		/*var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
-		ws.on('open', function() {
-		    ws.send(stringify(msg));
-		});
-		ws.on('message', function(message) {
-		    console.log('received: %s', message);
-		    res.send(message)
-		});
-		ws.on('error', function(error) {
-			res.send(error)
-		})*/
 		var client = new WebSocketClient();
 
 		client.on('connectFailed', function(error) {
@@ -227,17 +193,6 @@ app.get('/lab4/:node/storage/:key', function(req, res){
 		    date: Date.now()
 	}
 	try {
-		/*var ws = new WebSocket('ws://'+ req.params.node[0] + '/node');
-		ws.on('open', function() {
-		    ws.send(stringify(msg));
-		});
-		ws.on('message', function(message) {
-		    console.log('received: %s', message);
-		    res.send(message)
-		});
-		ws.on('error', function(error) {
-			res.send(error)
-		})*/
 		var client = new WebSocketClient();
 
 		client.on('connectFailed', function(error) {
