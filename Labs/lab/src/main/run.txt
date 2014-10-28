@@ -1,0 +1,1 @@
+sudo docker run --publish-all=true --rm -i -t dhtnode

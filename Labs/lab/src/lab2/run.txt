@@ -1,0 +1,4 @@
+go test -test.run TestRingSetup
+go test -test.run TestLookup
+go test -test.run TestFinger3bits
+go test -test.run TestFinger160bits
