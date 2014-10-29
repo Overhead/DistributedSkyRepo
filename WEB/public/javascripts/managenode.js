@@ -63,6 +63,7 @@ function CreateSkyRingList(data) {
 			for(var j=0; j < json.Nodes.length; j++) {
 				populateSkyringList(j+1, json.Nodes[j], json, table);
 			}
+			setRingHeaderText(json.Nodes.length)
 		}
 	}catch(e) {
 		console.log(e)

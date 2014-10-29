@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"encoding/json"
-	"log"
 	"os"
 	"net"
 	"net/http"
@@ -441,14 +440,16 @@ func handleDockerAction(msg* Msg) string {
 }
 
 func echoHandler(ws *websocket.Conn) {
+	defer ws.Close()
+  fmt.Println("Client Connected") 
 	var err error
 	var msg Msg	
 	for {
 		dec := json.NewDecoder(ws)
 		err = dec.Decode(&msg)
 		if err != nil {
-			log.Fatal(err)
-			break
+			fmt.Printf("Read Error: %s\n", err.Error())
+			return
 		}
 		fmt.Printf("Receive: %s\n", &msg)
 		
@@ -458,7 +459,7 @@ func echoHandler(ws *websocket.Conn) {
 
 		_, err := ws.Write([]byte(response))
 		if err != nil {
-			log.Fatal(err)
+			fmt.Printf("Write Error: %s\n", err.Error())
 		}
 		fmt.Printf("Send: %s\n", response)
 	}
@@ -466,7 +467,7 @@ func echoHandler(ws *websocket.Conn) {
 
 func main() {
 	http.Handle("/docker", websocket.Handler(echoHandler))
-	err := http.ListenAndServe(":8081", nil)
+	err := http.ListenAndServe(":3001", nil)
 	if err != nil {
 		panic("ListenAndServe: " + err.Error())
 	}

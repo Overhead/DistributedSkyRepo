@@ -22,6 +22,10 @@ $( document ).ready(function() {
 	
 });
 
+window.onbeforeunload = function() {
+    wSocket.close()
+};
+
 function ShowContainers() {   
     var msg = {
     	Action: 7,
@@ -58,10 +62,9 @@ function CreateCont() {
 	console.log("Create")
 	var contname = $('#container-name-field');
 	var imgid = $('#image-id-field');
-	var joinaddr = $('#node-join-addr');
 	
-	if(contname.val() == "" || imgid.val() == "" || joinaddr.val() == "") {
-		alert("Fill in Name, ID and JoinAddress")
+	if(contname.val() == "" || imgid.val() == "") {
+		alert("Fill in Name and ID")
 	} else {
 		var msg = {
 			Action: 1,
@@ -71,7 +74,7 @@ function CreateCont() {
 		}
 		wSocket.send(JSON.stringify(msg));
 		contname.val("");
-		imgid.val("");
+		imgid.val(""); 
 	}
 }
 
@@ -121,6 +124,10 @@ function ConnectNodeToRing(container_id){
 			Date: Date.now()
 		}
 		wSocket.send(JSON.stringify(msg));
+		
+		if(joinaddr == "") {
+			alert("This node had no join address, so it will not join any ring")
+		}
 }
 
 /*function GetSkyRing() { //Future working solution
