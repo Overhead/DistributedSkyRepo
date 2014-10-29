@@ -419,8 +419,13 @@ func handleDockerAction(msg* Msg) string {
 		case 11: //Tell node to join 
 			container, err := InspectContainer(msg.Container_ID)
 			if err != nil {
-				fmt.Println(err)			
-			} else {
+				fmt.Println(err)
+				data := RpcOutput{}
+				data.Content += fmt.Sprintf("ERROR: %s", err)
+				data.ReplyCode = ErrorCode
+				b, _ := json.Marshal(data)
+				return fmt.Sprintf(string(b))	
+			} else if msg.JoinAddr != "" {
 				fmt.Println(container)
 				newCont := container.NetworkSettings.IPAddress + ":1075"
 				newContAddr, err := net.ResolveUDPAddr("udp", newCont)
