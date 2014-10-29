@@ -65,6 +65,26 @@ fmt.Println("add node 9")
   addToRing(node7, node9)
 fmt.Println("ready adding")
 
+  initCalc(node1)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node2)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node3)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node4)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node5)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node6)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node7)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node8)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node9)
+  time.Sleep(1000 * time.Millisecond)
+
+
 time.Sleep(5000 * time.Millisecond)
 
   fmt.Println("-------------------------------------------------------------------------------")
@@ -74,7 +94,27 @@ time.Sleep(5000 * time.Millisecond)
   fmt.Println("-------------------------------------------------------------------------------")
 fmt.Println("ready printing")
 time.Sleep(5000 * time.Millisecond)
+  fmt.Println("-------------------------------------------------------------------------------")
+time.Sleep(2000 * time.Millisecond)
 
+  testDumpFingers(node2)
+
+time.Sleep(5000 * time.Millisecond)
+
+  fmt.Println("")
+  fmt.Println("-------------------------------------------------------------------------------")
+  testDumpFingers(node5)
+
+time.Sleep(5000 * time.Millisecond)
+
+  fmt.Println("")
+  fmt.Println("-------------------------------------------------------------------------------")
+  testDumpFingers(node8)
+
+time.Sleep(5000 * time.Millisecond)
+
+  fmt.Println("")
+  fmt.Println("-------------------------------------------------------------------------------")
 
   str := "hello students!"
   hashKey := sha1hash(str)
@@ -92,8 +132,6 @@ time.Sleep(5000 * time.Millisecond)
   time.Sleep(5000 * time.Millisecond)
   fmt.Println(" is respoinsible for " + hashKey)
 
-  fmt.Println("-------------------------------------------------------------------------------")
-time.Sleep(2000 * time.Millisecond)
 }
 
 

@@ -177,6 +177,11 @@ fmt.Println("Responsible", answ.Key)
     // I am responsible
 fmt.Println("Responsible", nod.nodeId)
     sendRespons(nod, &msg)
+  case 9:    // dumpFingers
+fmt.Println("dump>Finger")
+    for i := 0; i < 160; i++ {
+      fmt.Printf("%s  %s\n", nod.fingerVal[i], nod.fingerNod[i])
+    }
   }
 }
 
@@ -263,8 +268,9 @@ fmt.Println("msg.Next: ", msg.Dst)
 
   mess := new (Message)
   next := msg.Dst
+  mess.Src = msg.Src
   for i := 0; i < 160; i++ {
-    for between(nodLow, nodHigh, []byte(nod.nodeId)) == false {
+    for between(nodLow, nodHigh, []byte(nod.fingerVal[i])) == false {
       nodLow  = nodHigh
       mess    = getRemoteInfo(nod, next)
       nodHigh = []byte(mess.Key)

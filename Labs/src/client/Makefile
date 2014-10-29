@@ -8,3 +8,4 @@ build:
 	go build -o ${GOPATH}/bin/replic replic.go;
 	go build -o ${GOPATH}/bin/search search.go;
 	go build -o ${GOPATH}/bin/update update.go;
+	go build -o ${GOPATH}/bin/dumpfingers dumpfingers.go;

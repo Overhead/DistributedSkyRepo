@@ -67,12 +67,47 @@ fmt.Println("ready adding")
 
 time.Sleep(5000 * time.Millisecond)
 
+  initCalc(node1)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node2)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node3)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node4)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node5)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node6)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node7)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node8)
+  time.Sleep(1000 * time.Millisecond)
+  initCalc(node9)
+  time.Sleep(5000 * time.Millisecond)
+
   fmt.Println("-------------------------------------------------------------------------------")
   fmt.Println("RING STRUCTURE")
   fmt.Println("-------------------------------------------------------------------------------")
   printRing(node1)
   fmt.Println("-------------------------------------------------------------------------------")
 fmt.Println("ready printing")
+time.Sleep(5000 * time.Millisecond)
+
+ testDumpFingers(node2)
+
+time.Sleep(5000 * time.Millisecond)
+
+  fmt.Println("")
+  fmt.Println("-------------------------------------------------------------------------------")
+  testDumpFingers(node5)
+
+time.Sleep(5000 * time.Millisecond)
+
+  fmt.Println("")
+  fmt.Println("-------------------------------------------------------------------------------")
+  testDumpFingers(node8)
+
 time.Sleep(5000 * time.Millisecond)
 
 

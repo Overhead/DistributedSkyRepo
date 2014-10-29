@@ -162,6 +162,27 @@ func lookup(nod *net.UDPAddr, key string) {
 }
 
 
+func testDumpFingers(nod *net.UDPAddr) {
+
+  conn, err := net.DialUDP("udp", nil, nod)
+  checkError(err)
+
+  var msg Message
+  msg.Idx = 24
+  msg.Key = ""
+  msg.Src = nil
+  msg.Dst = nod
+
+  defer conn.Close()
+  buffer, err := json.Marshal(msg)
+  checkError(err)
+
+fmt.Println("Sending: ", buffer[0:])
+   _, err = conn.Write(buffer)
+  checkError(err)
+}
+
+
 func initCalc(nod *net.UDPAddr) {
 
   conn, err := net.DialUDP("udp", nil, nod)

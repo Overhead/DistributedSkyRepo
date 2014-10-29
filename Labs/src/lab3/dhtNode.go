@@ -320,6 +320,12 @@ fmt.Println("Get return data", answ.Info)
     replyStat(&msg)
   case 23:   // Ping reply, do nothing
 //fmt.Println("Ping reply")
+  case 24:   // dump fingertable
+    fmt.Println("dump>Finger")
+    for i := 0; i < 160; i++ {
+      fmt.Printf("%s  %s\n", nod.fingerVal[i], nod.fingerNod[i])
+    }
+
   }
 }
 

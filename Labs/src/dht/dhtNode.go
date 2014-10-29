@@ -94,18 +94,19 @@ fmt.Println("My IP: ", addr)
   service = ":" + port
   localAddr, err = net.ResolveUDPAddr("udp", service)
   checkError(err, 102)
-  conn, err := net.ListenUDP("udp", localAddr)
-  checkError(err, 103)
   answPort.initPool()
   go startWebSocket(nod)
+  go doStartupReplication(table, nod)
+
+  conn, err := net.ListenUDP("udp", localAddr)
+  checkError(err, 103)
 
 fmt.Println("Node created: ", nod.nodeId)
-  sendToDaddy(nod)
-
-  go doStartupReplication(table, nod)
+//  sendToDaddy(nod)
   for {
     n, _, err := conn.ReadFromUDP(buf[0:])
     checkError(err, 104)
+fmt.Println("Mess: ", buf)
     go handleRequest(table, n, buf, nod)
   }
 }
@@ -405,6 +406,22 @@ fmt.Println("Update records: ", nod.nodeId)
     replyStat(&msg)
   case 23:   // Ping reply, do nothing
 //fmt.Println("Ping reply")
+  case 24:   // dump fingers
+fmt.Println("dump>Finger")
+    mess := new (Message)
+    mess.Idx  = 24
+    mess.Info = nil
+    mess.Dst  = msg.Src
+    for i := 0; i < 160; i++ {
+fmt.Printf("%s  %s\n", nod.fingerVal[i], nod.fingerNod[i])
+      mess.Key = nod.fingerVal[i]
+      mess.Src = nod.fingerNod[i]
+      mess.Gen = i
+      doRemote(mess)
+      time.Sleep(100 * time.Millisecond)
+    }
+    mess.Key = ""
+    doRemote(mess)
   }
 }
 
